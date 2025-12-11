@@ -20,7 +20,7 @@ func _process(_delta: float) -> void:
 func create_lobby():
 	if lobby_id == 0:
 		is_host = true
-		Steam.createLobby(Steam.LOBBY_TYPE_PUBLIC,lobby_members_max)
+		Steam.createLobby(Steam.LOBBY_TYPE_FRIENDS_ONLY,lobby_members_max)
 		print(lobby_id)
 
 
@@ -28,9 +28,11 @@ func _on_lobby_create(connectd: int, this_lobby_id:int):
 	if connectd == 1:
 		lobby_id = this_lobby_id
 		
+		
 		Steam.setLobbyJoinable(lobby_id,true)
 		
 		Steam.setLobbyData(lobby_id,"name","Sergio lobby")
+		await Steam.lobby_created
 		print("CREATED LOBBY: ", lobby_id)
 		#var set_relay: bool = 
 		Steam.allowP2PPacketRelay(true)
@@ -108,7 +110,31 @@ func read_p2p_packet():
 					print("PLAYER: ", readable_data["username"], "HAS JOINED!!")
 					get_lobby_members()
 	
-	
+func get_lobbies_with_friends() -> Dictionary:
+	var results: Dictionary = {}
+
+	for i in range(0, Steam.getFriendCount()):
+		var steam_id: int = Steam.getFriendByIndex(i, Steam.FRIEND_FLAG_IMMEDIATE)
+		var game_info: Dictionary = Steam.getFriendGamePlayed(steam_id)
+
+		if game_info.is_empty():
+			# This friend is not playing a game
+			continue
+		else:
+			# They are playing a game, check if it's the same game as ours
+			var app_id: int = game_info['id']
+			var lobby = game_info['lobby']
+
+			if app_id != Steam.getAppID() or lobby is String:
+				# Either not in this game, or not in a lobby
+				continue
+
+			if not results.has(lobby):
+				results[lobby] = []
+
+			results[lobby].append(steam_id)
+
+	return results
 	
 	
 	

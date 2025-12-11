@@ -31,10 +31,11 @@ func _enter_tree() -> void:
 
 func _ready():
 	$CoyoteTimer.wait_time = coyote_frames / 60.0
-
+	$Label.text = Global.steam_username
+	print(is_multiplayer_authority())
 
 func _physics_process(delta):
-	#if not is_multiplayer_authority(): return 
+	if not is_multiplayer_authority(): return 
 
 	# Verifica si estás en el suelo antes de procesar física
 	var on_floor_now = is_on_floor()

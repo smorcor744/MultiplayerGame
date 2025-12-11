@@ -48,7 +48,7 @@ shape = SubResource("WorldBoundaryShape2D_p3ir5")
 
 [node name="Player" parent="Players" instance=ExtResource("2_26yhd")]
 position = Vector2(367.99997, 540)
-scale = Vector2(1.4375, 1)
+scale = Vector2(3.263218, 2.2700646)
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
 spawn_path = NodePath("../Players/Player")

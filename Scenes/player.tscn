@@ -318,6 +318,7 @@ height = 32.0
 
 [node name="Player" type="CharacterBody2D"]
 texture_filter = 1
+scale = Vector2(1.8553219, 1.8553219)
 script = ExtResource("1_cvnsp")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
@@ -334,3 +335,15 @@ shape = SubResource("CapsuleShape2D_nv4vc")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_cvnsp")
+
+[node name="Label" type="Label" parent="."]
+offset_left = -20.0
+offset_top = -40.42425
+offset_right = 20.0
+offset_bottom = -17.424252
+theme_override_font_sizes/font_size = 10
+text = "sersdasdasdasdadd"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+metadata/_edit_use_anchors_ = true
