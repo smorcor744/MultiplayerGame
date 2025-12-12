@@ -7,11 +7,13 @@ var lobby_id : int = 0
 var lobby_members:Array = []
 var lobby_members_max :int = 20
 
+var peer = SteamMultiplayerPeer.new()
 
 func _ready() -> void:
 	Steam.lobby_created.connect(_on_lobby_create)
 	Steam.lobby_joined.connect(_on_lobby_joined)
 	Steam.p2p_session_request.connect(_on_p2p_session_request)
+
 
 func _process(_delta: float) -> void:
 	if lobby_id > 0:
@@ -25,17 +27,23 @@ func create_lobby():
 
 
 func _on_lobby_create(connectd: int, this_lobby_id:int):
+	print("CREATING LOBBY...")
 	if connectd == 1:
 		lobby_id = this_lobby_id
-		
+		print(lobby_id)
 		
 		Steam.setLobbyJoinable(lobby_id,true)
 		
 		Steam.setLobbyData(lobby_id,"name","Sergio lobby")
-		await Steam.lobby_created
-		print("CREATED LOBBY: ", lobby_id)
-		#var set_relay: bool = 
-		Steam.allowP2PPacketRelay(true)
+		var error = peer.create_host(0)
+		
+		if error == OK:
+			multiplayer.multiplayer_peer = peer # Le decimos a Godot que use Steam
+			print("Host iniciado correctamente")
+		else:
+			print("Error al iniciar host",error)
+		Global.change_scene("res://Scenes/map.tscn")
+		
 
 
 func joint_lobby(this_lobby_id :int):
@@ -44,9 +52,23 @@ func joint_lobby(this_lobby_id :int):
 func _on_lobby_joined(this_lobby_id:int, _permissions:int,_locked:bool,response:int):
 	if response == Steam.CHAT_ROOM_ENTER_RESPONSE_SUCCESS:
 		lobby_id = this_lobby_id
-		print("JOINED LOBBY: ", lobby_id)
-		get_lobby_members()
-		make_p2p_handshake()
+		
+		var host_id = Steam.getLobbyOwner(lobby_id)
+		var my_steam_id = Steam.getSteamID()
+		
+		if host_id == my_steam_id:
+			print("soy el host")
+			return
+		multiplayer.multiplayer_peer = null
+		var error = peer.create_client(host_id, 0)
+		if error == OK:
+			multiplayer.multiplayer_peer = peer # Le decimos a Godot que use Steam
+			print("Conectado como cliente al Host: ", host_id)
+		else:
+			print("Error al iniciar cliente" , error)
+			
+		# Cambiamos a la misma escena del juego
+		Global.change_scene("res://Scenes/map.tscn")
 
 
 func get_lobby_members():

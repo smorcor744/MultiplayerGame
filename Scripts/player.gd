@@ -27,7 +27,6 @@ var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 
 func _enter_tree() -> void:
 	set_multiplayer_authority(name.to_int())
-	print(name.to_int())
 
 func _ready():
 	$CoyoteTimer.wait_time = coyote_frames / 60.0

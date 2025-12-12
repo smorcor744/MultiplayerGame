@@ -1,6 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://bo4o8r1q8k1xb"]
+[gd_scene load_steps=7 format=3 uid="uid://bo4o8r1q8k1xb"]
 
 [ext_resource type="Texture2D" uid="uid://nsnwamhiyuqo" path="res://icon.svg" id="1_ci6au"]
+[ext_resource type="Script" uid="uid://c7vbh5t2rrniy" path="res://Scripts/map.gd" id="1_myvm1"]
 [ext_resource type="PackedScene" uid="uid://dh8pwqukj5i7o" path="res://Scenes/player.tscn" id="2_26yhd"]
 [ext_resource type="Script" uid="uid://bltbovrtxw216" path="res://Scripts/multiplayer_spawner.gd" id="3_p3ir5"]
 
@@ -8,7 +9,8 @@
 
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_p3ir5"]
 
-[node name="Node2D" type="Node2D"]
+[node name="Game" type="Node2D"]
+script = ExtResource("1_myvm1")
 
 [node name="TileMapLayer" type="TileMapLayer" parent="."]
 tile_set = SubResource("TileSet_26yhd")
@@ -46,10 +48,24 @@ shape = SubResource("WorldBoundaryShape2D_p3ir5")
 
 [node name="Players" type="Node" parent="."]
 
-[node name="Player" parent="Players" instance=ExtResource("2_26yhd")]
-position = Vector2(367.99997, 540)
-scale = Vector2(3.263218, 2.2700646)
+[node name="Spawners" type="Node" parent="."]
 
-[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
-spawn_path = NodePath("../Players/Player")
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="Spawners"]
+spawn_path = NodePath("../../Players")
 script = ExtResource("3_p3ir5")
+network_player = ExtResource("2_26yhd")
+
+[node name="MultiplayerSpawner2" type="MultiplayerSpawner" parent="Spawners"]
+spawn_path = NodePath("../../Players")
+script = ExtResource("3_p3ir5")
+network_player = ExtResource("2_26yhd")
+
+[node name="MultiplayerSpawner3" type="MultiplayerSpawner" parent="Spawners"]
+spawn_path = NodePath("../../Players")
+script = ExtResource("3_p3ir5")
+network_player = ExtResource("2_26yhd")
+
+[node name="MultiplayerSpawner4" type="MultiplayerSpawner" parent="Spawners"]
+spawn_path = NodePath("../../Players")
+script = ExtResource("3_p3ir5")
+network_player = ExtResource("2_26yhd")

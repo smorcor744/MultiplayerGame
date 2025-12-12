@@ -20,7 +20,7 @@ func _on_join_pressed() -> void:
 
 func _on_host_pressed() -> void:
 	Network.create_lobby()
-	Global.change_scene("res://Scenes/map.tscn")
+	
 
 
 func _on_refresh_lobbies_pressed() -> void:
