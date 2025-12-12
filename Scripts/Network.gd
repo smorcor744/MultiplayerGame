@@ -158,7 +158,7 @@ func get_lobbies_with_friends() -> Dictionary:
 
 	return results
 	
-	
+
 	
 	
 	

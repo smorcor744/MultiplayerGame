@@ -1,4 +1,4 @@
-extends Node2D # O Node2D
+extends Node2D
 
 func _ready():
 	# Solo el servidor (Host) tiene autoridad para crear jugadores

@@ -15,7 +15,6 @@ func _on_join_pressed() -> void:
 	var id:int = int(lobby_id.text)
 	Network.joint_lobby(id)
 	
-	Global.change_scene("res://Scenes/map.tscn")
 
 
 func _on_host_pressed() -> void:
@@ -24,29 +23,26 @@ func _on_host_pressed() -> void:
 
 
 func _on_refresh_lobbies_pressed() -> void:
-	# 1. Limpiar la lista anterior
 	for child in lobby_container.get_children():
 		child.queue_free()
 
-	# 2. Obtener los lobbies de amigos (asumiendo que Global existe y tiene la función)
 	var friend_lobbies: Dictionary = Network.get_lobbies_with_friends()
-	
+	#print(Steam.getUserSteamFriends())
 	if friend_lobbies.is_empty():
 		print("No se encontraron lobbies de amigos.")
-		# Opcional: mostrar un mensaje en la UI
+
 		var label = Label.new()
-		label.text = "No hay lobbies disponibles"
+		label.text = "No se encontraron lobbies de amigos."
 		lobby_container.add_child(label)
 		return
 
-	# 3. Iterar sobre el diccionario y crear elementos para la UI
 	for id in friend_lobbies:
+		print("1")
 		var lobby_data = friend_lobbies[lobby_id]
 		
-		# Crea un nuevo elemento para la lista (por ejemplo, un botón)
+		# Crea un nuevo elemento para la lista 
 		var lobby_item = Button.new()
 		
-		# Asume que lobby_data puede contener el nombre o el dueño
 		var lobby_name = lobby_data.get("name", "Lobby sin nombre")
 		var owner_steam_name = lobby_data.get("owner_name", "Desconocido") # Esto es un ejemplo de dato
 
@@ -65,3 +61,7 @@ func _on_lobby_item_pressed(id: int) -> void:
 	# Lógica para unirse al lobby
 	Network.joint_lobby(id)
 	Global.change_scene("res://Scenes/map.tscn")
+
+
+func _on_id_pressed() -> void:
+	Global.steam_id = 22222
