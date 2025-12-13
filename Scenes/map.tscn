@@ -44,9 +44,8 @@ position = Vector2(-244.17392, 333)
 scale = Vector2(0.6956522, 1)
 shape = SubResource("WorldBoundaryShape2D_p3ir5")
 
-[node name="Node2D" type="Node2D" parent="."]
-
-[node name="Players" type="Node" parent="."]
+[node name="Players" type="Node2D" parent="."]
+position = Vector2(613, 123)
 
 [node name="Spawners" type="Node" parent="."]
 

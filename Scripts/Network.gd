@@ -12,18 +12,22 @@ var peer = SteamMultiplayerPeer.new()
 func _ready() -> void:
 	Steam.lobby_created.connect(_on_lobby_create)
 	Steam.lobby_joined.connect(_on_lobby_joined)
-	Steam.p2p_session_request.connect(_on_p2p_session_request)
-
+	Steam.join_requested.connect(_on_lobby_joined_requested)
+	multiplayer.server_disconnected.connect(_on_server_disconnected)
 
 func _process(_delta: float) -> void:
-	if lobby_id > 0:
-		read_all_p2p_packets()
+	Steam.run_callbacks()
+
 
 func create_lobby():
 	if lobby_id == 0:
 		is_host = true
 		Steam.createLobby(Steam.LOBBY_TYPE_FRIENDS_ONLY,lobby_members_max)
 		print(lobby_id)
+		
+
+func open_invite_menu():
+	Steam.activateGameOverlay("LobbyInvite")
 
 
 func _on_lobby_create(connectd: int, this_lobby_id:int):
@@ -42,9 +46,12 @@ func _on_lobby_create(connectd: int, this_lobby_id:int):
 			print("Host iniciado correctamente")
 		else:
 			print("Error al iniciar host",error)
-		Global.change_scene("res://Scenes/map.tscn")
+		Global.change_scene("res://Scenes/lobby.tscn")
 		
 
+func _on_lobby_joined_requested(friend_lobby_id: int, friend_id: int):
+	print("Intentando unirse a lobby: ", friend_lobby_id,"ID Friend",friend_id)
+	Steam.joinLobby(friend_lobby_id)
 
 func joint_lobby(this_lobby_id :int):
 	Steam.joinLobby(this_lobby_id)
@@ -68,7 +75,7 @@ func _on_lobby_joined(this_lobby_id:int, _permissions:int,_locked:bool,response:
 			print("Error al iniciar cliente" , error)
 			
 		# Cambiamos a la misma escena del juego
-		Global.change_scene("res://Scenes/map.tscn")
+		Global.change_scene("res://Scenes/lobby.tscn")
 
 
 func get_lobby_members():
@@ -83,55 +90,29 @@ func get_lobby_members():
 		lobby_members.append({"steam_id":member_steam_id,"steam_name":member_steam_name})
 	
 	
-func send_p2p_packet(this_target:int,packet_data:Dictionary, send_type:int = 0):
-	var channel:int = 0
+func check_command_line():
+	var args = OS.get_cmdline_args()
 	
-	var this_data:PackedByteArray
-	this_data.append_array(var_to_bytes(packet_data))
+	for i in range(args.size()):
+		if args[i]== "+connect_lobby":
+			if args.size() > i+1:
+				var friend_lobby_id = int(args[i +1])
+				print("Lanzado desde invitación. Uniendo a: ", lobby_id)
+				Steam.joinLobby(friend_lobby_id)
 	
-	if this_target == 0:
-		if lobby_members.size() > 1:
-			for member in lobby_members:
-				if member['steam_id'] != Global.steam_id:
-					Steam.sendP2PPacket(member['steam_id'],this_data,send_type,channel)
-	else:
-		Steam.sendP2PPacket(this_target,this_data,send_type,channel)
+
+func leave_lobby():
+	if lobby_id == 0:
+		Steam.leaveLobby(lobby_id)
+		lobby_id = 0
+	multiplayer.multiplayer_peer = null
+	
+	Global.change_scene("res://Scenes/main.tscn")
+
+func _on_server_disconnected():
+	leave_lobby()
 
 
-func _on_p2p_session_request(remote_id:int):
-	var this_requester: String = Steam.getFriendPersonaName(remote_id)
-	
-	Steam.acceptP2PSessionWithUser(remote_id)
-
-func make_p2p_handshake():
-	send_p2p_packet(0,{"message":"handshake", "steam_id":Global.steam_id, "username":Global.steam_username})
-
-func read_all_p2p_packets(read_count:int =0):
-	if read_count >= PACKET_READ_LIMIT:
-		return
-	
-	if Steam.getAvailableP2PPacketSize(0)> 0:
-		read_p2p_packet()
-		read_all_p2p_packets(read_count +1)
-
-
-func read_p2p_packet():
-	var packet_size: int = Steam.getAvailableP2PPacketSize(0)
-	
-	if packet_size > 0:
-		var this_packet: Dictionary = Steam.readP2PPacket(packet_size,0)
-		
-		var packet_sender: int = this_packet['remote_steam_id']
-		
-		var packed_code:PackedByteArray = this_packet['data']
-		var readable_data:Dictionary = bytes_to_var(packed_code)
-		
-		if readable_data.has("message"):
-			match readable_data["message"]:
-				"handshake":
-					print("PLAYER: ", readable_data["username"], "HAS JOINED!!")
-					get_lobby_members()
-	
 func get_lobbies_with_friends() -> Dictionary:
 	var results: Dictionary = {}
 
@@ -159,7 +140,9 @@ func get_lobbies_with_friends() -> Dictionary:
 	return results
 	
 
-	
+@rpc("call_local", "reliable")
+func start_game(game_scene_path:String):
+	Global.change_scene(game_scene_path)
 	
 	
 	

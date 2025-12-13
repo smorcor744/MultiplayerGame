@@ -1,6 +1,38 @@
-[gd_scene load_steps=2 format=3 uid="uid://bwnodfhn3tfpg"]
+[gd_scene load_steps=13 format=3 uid="uid://bwnodfhn3tfpg"]
 
 [ext_resource type="Script" uid="uid://dwrwla5g3s8yr" path="res://Scripts/lobby.gd" id="1_nvaej"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_jigxi"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_4233d"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_bvheq"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_aghey"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_o08vn"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_nvaej"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_y0s6v"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_u1o2k"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_avk8s"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ruji2"]
+
+[sub_resource type="Theme" id="Theme_jigxi"]
+HScrollBar/styles/grabber = SubResource("StyleBoxEmpty_jigxi")
+HScrollBar/styles/grabber_highlight = SubResource("StyleBoxEmpty_4233d")
+HScrollBar/styles/grabber_pressed = SubResource("StyleBoxEmpty_bvheq")
+HScrollBar/styles/scroll = SubResource("StyleBoxEmpty_aghey")
+HScrollBar/styles/scroll_focus = SubResource("StyleBoxEmpty_o08vn")
+VScrollBar/styles/grabber = SubResource("StyleBoxEmpty_nvaej")
+VScrollBar/styles/grabber_highlight = SubResource("StyleBoxEmpty_y0s6v")
+VScrollBar/styles/grabber_pressed = SubResource("StyleBoxEmpty_u1o2k")
+VScrollBar/styles/scroll = SubResource("StyleBoxEmpty_avk8s")
+VScrollBar/styles/scroll_focus = SubResource("StyleBoxEmpty_ruji2")
 
 [node name="Lobby" type="Control"]
 layout_mode = 3
@@ -47,30 +79,62 @@ anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -512.0
+offset_left = -536.0
 offset_top = -72.0
-offset_right = -416.0
+offset_right = -440.0
 offset_bottom = -41.0
 grow_horizontal = 0
 grow_vertical = 0
 text = "Start Game"
 
+[node name="Invite" type="Label" parent="."]
+layout_mode = 0
+offset_left = 896.0
+offset_top = 144.0
+offset_right = 1024.0
+offset_bottom = 184.0
+theme_override_font_sizes/font_size = 29
+text = "INVITE"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="InvitePanel" type="Panel" parent="."]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.7222222
-anchor_top = 0.2962963
-anchor_right = 1.0
-anchor_bottom = 1.0
+anchor_left = 0.7152778
+anchor_top = 0.28395063
+anchor_right = 0.9513889
+anchor_bottom = 0.90123457
 grow_horizontal = 0
 grow_vertical = 0
 metadata/_edit_use_anchors_ = true
 
-[node name="Friends" type="VBoxContainer" parent="InvitePanel"]
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
+anchors_preset = -1
+anchor_left = 0.7222222
+anchor_top = 0.2962963
+anchor_right = 0.9444444
+anchor_bottom = 0.8888889
 grow_horizontal = 2
 grow_vertical = 2
+theme = SubResource("Theme_jigxi")
+horizontal_scroll_mode = 2
+vertical_scroll_mode = 2
 metadata/_edit_use_anchors_ = true
+
+[node name="Friends" type="VBoxContainer" parent="ScrollContainer"]
+layout_mode = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="Refresh" type="Button" parent="."]
+layout_mode = 0
+offset_left = 928.0
+offset_top = 592.0
+offset_right = 996.0
+offset_bottom = 623.0
+text = "Refresh"
+
+[connection signal="pressed" from="ExitLobby" to="." method="_on_exit_lobby_pressed"]
+[connection signal="pressed" from="StartGame" to="." method="_on_start_game_pressed"]
+[connection signal="pressed" from="Refresh" to="." method="_on_refresh_pressed"]

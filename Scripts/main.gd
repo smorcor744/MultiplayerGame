@@ -10,6 +10,7 @@ func _ready() -> void:
 	if !Global.steam_running :
 		join.disabled = true
 		host.disabled = true
+		lobby_id.text = "Abre el Steam"
 
 func _on_join_pressed() -> void:
 	var id:int = int(lobby_id.text)
@@ -37,7 +38,6 @@ func _on_refresh_lobbies_pressed() -> void:
 		return
 
 	for id in friend_lobbies:
-		print("1")
 		var lobby_data = friend_lobbies[lobby_id]
 		
 		# Crea un nuevo elemento para la lista 
@@ -64,4 +64,4 @@ func _on_lobby_item_pressed(id: int) -> void:
 
 
 func _on_id_pressed() -> void:
-	Global.steam_id = 22222
+	Network.open_invite_menu()

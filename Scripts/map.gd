@@ -1,4 +1,5 @@
 extends Node2D
+const PLAYER = preload("uid://dh8pwqukj5i7o")
 
 func _ready():
 	# Solo el servidor (Host) tiene autoridad para crear jugadores
@@ -15,7 +16,8 @@ func _ready():
 			_add_player(id)
 
 func _add_player(id: int):
-	var player = preload("res://Scenes/Player.tscn").instantiate()
+	var player = PLAYER.instantiate()
+	
 	player.name = str(id) # IMPORTANTE: El nombre debe ser la ID de red
 	$Players.add_child(player) # El MultiplayerSpawner detectará esto y lo replicará a todos
 

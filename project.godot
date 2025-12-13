@@ -53,6 +53,10 @@ right={
 ]
 }
 
+[input_devices]
+
+pointing/emulate_touch_from_mouse=true
+
 [steam]
 
 initialization/app_id=0
