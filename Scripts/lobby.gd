@@ -1,8 +1,18 @@
 extends Control
 @onready var friends_container: VBoxContainer = $ScrollContainer/Friends
+@onready var chat: RichTextLabel = $Vbox/RichTextLabel
+@onready var message: LineEdit = $Vbox/HBoxContainer/Message
 
 func _ready() -> void:
+
 	_on_refresh_lobbies_pressed()
+	Network.player_joined.connect(update_chat)
+	update_chat("Se a unido a la lobby.")
+
+
+func update_chat(mensaje:String):
+	chat.text += str(Global.steam_username+": " + mensaje +"\n")
+	print(2222)
 
 
 func _on_refresh_lobbies_pressed() -> void:
@@ -12,7 +22,7 @@ func _on_refresh_lobbies_pressed() -> void:
 	var friends: Array = Steam.getUserSteamFriends()
 
 	for friend in friends:
-		if friend["status"] == 0:
+		if friend["status"] == 1:
 			continue 
 			
 		var friend_data = friend
@@ -21,9 +31,9 @@ func _on_refresh_lobbies_pressed() -> void:
 
 
 		var row_panel = PanelContainer.new()
-		
+		row_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		var hbox = HBoxContainer.new()
-
+		hbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		hbox.add_theme_constant_override("separation", 10) 
 		row_panel.add_child(hbox)
 		
@@ -31,7 +41,7 @@ func _on_refresh_lobbies_pressed() -> void:
 		var name_label = Label.new()
 		name_label.text = str(friend_name)
 
-
+		name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL 
 		name_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		hbox.add_child(name_label)
@@ -39,7 +49,7 @@ func _on_refresh_lobbies_pressed() -> void:
 
 		var invite_btn = Button.new()
 		invite_btn.text = "Invite"
-
+		invite_btn.mouse_filter = Control.MOUSE_FILTER_PASS
 		invite_btn.pressed.connect(_on_lobby_item_pressed.bind(friend_id))
 		hbox.add_child(invite_btn)
 		
@@ -71,3 +81,8 @@ func _on_exit_lobby_pressed() -> void:
 
 func _on_refresh_pressed() -> void:
 	_on_refresh_lobbies_pressed()
+
+
+func _on_send_pressed() -> void:
+	update_chat(message.text)
+	message.text = ""

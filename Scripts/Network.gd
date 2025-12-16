@@ -9,6 +9,10 @@ var lobby_members_max :int = 20
 
 var peer = SteamMultiplayerPeer.new()
 
+
+signal player_joined(user,message)
+
+
 func _ready() -> void:
 	Steam.lobby_created.connect(_on_lobby_create)
 	Steam.lobby_joined.connect(_on_lobby_joined)
@@ -62,7 +66,7 @@ func _on_lobby_joined(this_lobby_id:int, _permissions:int,_locked:bool,response:
 		
 		var host_id = Steam.getLobbyOwner(lobby_id)
 		var my_steam_id = Steam.getSteamID()
-		
+		emit_signal("player_joined",Global.steam_username,"Se esta uniendo...")
 		if host_id == my_steam_id:
 			print("soy el host")
 			return

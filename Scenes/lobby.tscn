@@ -69,8 +69,18 @@ custom_minimum_size = Vector2(0, 200)
 layout_mode = 2
 scroll_following = true
 
-[node name="Message" type="LineEdit" parent="Vbox"]
+[node name="HBoxContainer" type="HBoxContainer" parent="Vbox"]
 layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Message" type="LineEdit" parent="Vbox/HBoxContainer"]
+custom_minimum_size = Vector2(171.025, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Send" type="Button" parent="Vbox/HBoxContainer"]
+layout_mode = 2
+text = "Send"
 
 [node name="StartGame" type="Button" parent="."]
 layout_mode = 1
@@ -125,6 +135,7 @@ metadata/_edit_use_anchors_ = true
 
 [node name="Friends" type="VBoxContainer" parent="ScrollContainer"]
 layout_mode = 2
+mouse_filter = 2
 metadata/_edit_use_anchors_ = true
 
 [node name="Refresh" type="Button" parent="."]
@@ -136,5 +147,6 @@ offset_bottom = 623.0
 text = "Refresh"
 
 [connection signal="pressed" from="ExitLobby" to="." method="_on_exit_lobby_pressed"]
+[connection signal="pressed" from="Vbox/HBoxContainer/Send" to="." method="_on_send_pressed"]
 [connection signal="pressed" from="StartGame" to="." method="_on_start_game_pressed"]
 [connection signal="pressed" from="Refresh" to="." method="_on_refresh_pressed"]
