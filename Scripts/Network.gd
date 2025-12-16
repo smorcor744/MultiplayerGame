@@ -10,7 +10,7 @@ var lobby_members_max :int = 20
 var peer = SteamMultiplayerPeer.new()
 
 
-signal player_joined(user,message)
+signal player_joined(user)
 
 
 func _ready() -> void:
@@ -50,8 +50,10 @@ func _on_lobby_create(connectd: int, this_lobby_id:int):
 			print("Host iniciado correctamente")
 		else:
 			print("Error al iniciar host",error)
+		emit_signal("player_joined",Global.steam_id)
+
 		Global.change_scene("res://Scenes/lobby.tscn")
-		
+		emit_signal("player_joined",Global.steam_id)
 
 func _on_lobby_joined_requested(friend_lobby_id: int, friend_id: int):
 	print("Intentando unirse a lobby: ", friend_lobby_id,"ID Friend",friend_id)
@@ -66,7 +68,7 @@ func _on_lobby_joined(this_lobby_id:int, _permissions:int,_locked:bool,response:
 		
 		var host_id = Steam.getLobbyOwner(lobby_id)
 		var my_steam_id = Steam.getSteamID()
-		emit_signal("player_joined",Global.steam_username,"Se esta uniendo...")
+		
 		if host_id == my_steam_id:
 			print("soy el host")
 			return
@@ -80,6 +82,8 @@ func _on_lobby_joined(this_lobby_id:int, _permissions:int,_locked:bool,response:
 			
 		# Cambiamos a la misma escena del juego
 		Global.change_scene("res://Scenes/lobby.tscn")
+		print("2")
+		emit_signal("player_joined",Global.steam_id)
 
 
 func get_lobby_members():
@@ -146,6 +150,7 @@ func get_lobbies_with_friends() -> Dictionary:
 
 @rpc("call_local", "reliable")
 func start_game(game_scene_path:String):
+	
 	Global.change_scene(game_scene_path)
 	
 	

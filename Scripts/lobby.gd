@@ -6,13 +6,18 @@ extends Control
 func _ready() -> void:
 
 	_on_refresh_lobbies_pressed()
-	Network.player_joined.connect(update_chat)
-	update_chat("Se a unido a la lobby.")
+	Network.player_joined.connect(_on_player_joined_lobby)
+	if multiplayer.has_multiplayer_peer():
+			update_chat.rpc(Global.steam_username, "se ha unido a la lobby.")
 
+@rpc("call_local","reliable")
+func update_chat(username:String,mensaje:String):
+	chat.text += str(username+": " + mensaje +"\n")
 
-func update_chat(mensaje:String):
-	chat.text += str(Global.steam_username+": " + mensaje +"\n")
-	print(2222)
+func _on_player_joined_lobby(steam_id: int) -> void:
+	var friend_name = Steam.getFriendPersonaName(steam_id)
+
+	chat.text += str("[SISTEMA]: " + friend_name + " se unió.\n")
 
 
 func _on_refresh_lobbies_pressed() -> void:
@@ -22,7 +27,7 @@ func _on_refresh_lobbies_pressed() -> void:
 	var friends: Array = Steam.getUserSteamFriends()
 
 	for friend in friends:
-		if friend["status"] == 1:
+		if friend["status"] == 0:
 			continue 
 			
 		var friend_data = friend
@@ -70,10 +75,10 @@ func _on_lobby_item_pressed(friend_steam_id:int) -> void:
 		print("Error al enviar la invitacion")
 	print("INVITATION SENDED")
 
-
 func _on_start_game_pressed() -> void:
-	Global.change_scene("res://Scenes/map.tscn")
-
+	if multiplayer.is_server():
+		Network.start_game.rpc("res://Scenes/map.tscn")
+	
 
 func _on_exit_lobby_pressed() -> void:
 	Network.leave_lobby()
@@ -84,5 +89,5 @@ func _on_refresh_pressed() -> void:
 
 
 func _on_send_pressed() -> void:
-	update_chat(message.text)
+	update_chat.rpc(Global.steam_username,message.text)
 	message.text = ""
