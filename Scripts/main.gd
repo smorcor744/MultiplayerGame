@@ -28,35 +28,32 @@ func _on_refresh_lobbies_pressed() -> void:
 		child.queue_free()
 
 	var friend_lobbies: Dictionary = Network.get_lobbies_with_friends()
-	#print(Steam.getUserSteamFriends())
+	
 	if friend_lobbies.is_empty():
-		print("No se encontraron lobbies de amigos.")
-
 		var label = Label.new()
-		label.text = "No se encontraron lobbies de amigos."
+		label.text = "No hay amigos jugando."
 		lobby_container.add_child(label)
 		return
 
-	for id in friend_lobbies:
-		var lobby_data = friend_lobbies[lobby_id]
+	# Iteramos sobre los IDs de los lobbies encontrados
+	for lobby_steam_id in friend_lobbies:
+		# Obtenemos los datos REALES desde Steam usando la ID del lobby
+		var lobby_name = Steam.getLobbyData(lobby_steam_id, "name")
+		if lobby_name == "":
+			lobby_name = "Lobby Desconocido"
+			
+		var host_id = Steam.getLobbyOwner(lobby_steam_id)
+		var host_name = Steam.getFriendPersonaName(host_id)
 		
-		# Crea un nuevo elemento para la lista 
+		# Crear el botón
 		var lobby_item = Button.new()
+		lobby_item.text = "%s - Host: %s" % [lobby_name, host_name]
+		lobby_item.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		
-		var lobby_name = lobby_data.get("name", "Lobby sin nombre")
-		var owner_steam_name = lobby_data.get("owner_name", "Desconocido") # Esto es un ejemplo de dato
-
-		lobby_item.text = "Lobby: %s (ID: %s) - Host: %s" % [lobby_name, id, owner_steam_name]
+		# Conectar señal pasando la ID correcta
+		lobby_item.pressed.connect(_on_lobby_item_pressed.bind(lobby_steam_id))
 		
-		# Conectar la señal de presionar para unirse
-		lobby_item.pressed.connect(
-			func():
-				_on_lobby_item_pressed(id)
-		)
-		
-		# Añadir a tu contenedor
 		lobby_container.add_child(lobby_item)
-
 func _on_lobby_item_pressed(id: int) -> void:
 	# Lógica para unirse al lobby
 	Network.joint_lobby(id)

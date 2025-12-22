@@ -4,11 +4,20 @@ extends Control
 @onready var message: LineEdit = $Vbox/HBoxContainer/Message
 
 func _ready() -> void:
-
 	_on_refresh_lobbies_pressed()
 	Network.player_joined.connect(_on_player_joined_lobby)
+	Network.lobby_player_update.connect(_on_steam_lobby_update)
+	
 	if multiplayer.has_multiplayer_peer():
 			update_chat.rpc(Global.steam_username, "se ha unido a la lobby.")
+
+func _on_steam_lobby_update(type: int, user_id: int):
+	var user_name = Steam.getFriendPersonaName(user_id)
+	
+	if type == Steam.CHAT_MEMBER_STATE_CHANGE_ENTERED:
+		chat.text += "[SISTEMA]: " + user_name + " ha entrado.\n"
+	elif type == Steam.CHAT_MEMBER_STATE_CHANGE_LEFT:
+		chat.text += "[SISTEMA]: " + user_name + " ha salido.\n"
 
 @rpc("call_local","reliable")
 func update_chat(username:String,mensaje:String):

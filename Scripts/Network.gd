@@ -11,17 +11,29 @@ var peer = SteamMultiplayerPeer.new()
 
 
 signal player_joined(user)
+signal lobby_player_update(type, user_id)
 
 
 func _ready() -> void:
 	Steam.lobby_created.connect(_on_lobby_create)
 	Steam.lobby_joined.connect(_on_lobby_joined)
 	Steam.join_requested.connect(_on_lobby_joined_requested)
+	Steam.lobby_chat_update.connect(_on_lobby_chat_update)
 	multiplayer.server_disconnected.connect(_on_server_disconnected)
 
 func _process(_delta: float) -> void:
 	Steam.run_callbacks()
 
+
+func _on_lobby_chat_update(this_lobby_id: int, change_id: int, making_change_id: int, chat_state: int):
+	# chat_state 1 = Entró, 2 = Salió, 8 = Desconectado
+	if chat_state == Steam.CHAT_MEMBER_STATE_CHANGE_ENTERED:
+		print("Usuario " + str(change_id) + " ha entrado.")
+	elif chat_state == Steam.CHAT_MEMBER_STATE_CHANGE_LEFT or chat_state == Steam.CHAT_MEMBER_STATE_CHANGE_DISCONNECTED:
+		print("Usuario " + str(change_id) + " ha salido.")
+	
+	# Emitimos señal para que la UI (lobby.gd) se actualice
+	emit_signal("lobby_player_update", chat_state, change_id)
 
 func create_lobby():
 	if lobby_id == 0:
@@ -42,7 +54,7 @@ func _on_lobby_create(connectd: int, this_lobby_id:int):
 		
 		Steam.setLobbyJoinable(lobby_id,true)
 		
-		Steam.setLobbyData(lobby_id,"name","Sergio lobby")
+		Steam.setLobbyData(lobby_id,"name",Global.steam_username +"lobby")
 		var error = peer.create_host(0)
 		
 		if error == OK:
