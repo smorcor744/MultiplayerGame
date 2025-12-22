@@ -155,6 +155,7 @@ text = "Refresh"
 replication_config = SubResource("SceneReplicationConfig_nvaej")
 
 [connection signal="pressed" from="ExitLobby" to="." method="_on_exit_lobby_pressed"]
+[connection signal="text_submitted" from="Vbox/HBoxContainer/Message" to="." method="_on_message_text_submitted"]
 [connection signal="pressed" from="Vbox/HBoxContainer/Send" to="." method="_on_send_pressed"]
 [connection signal="pressed" from="StartGame" to="." method="_on_start_game_pressed"]
 [connection signal="pressed" from="Refresh" to="." method="_on_refresh_pressed"]

@@ -19,7 +19,7 @@ func _on_steam_lobby_update(type: int, user_id: int):
 	elif type == Steam.CHAT_MEMBER_STATE_CHANGE_LEFT:
 		chat.text += "[SISTEMA]: " + user_name + " ha salido.\n"
 
-@rpc("call_local","reliable")
+@rpc("authority","call_local","reliable")
 func update_chat(username:String,mensaje:String):
 	chat.text += str(username+": " + mensaje +"\n")
 
@@ -102,7 +102,13 @@ func _on_send_pressed() -> void:
 	if not multiplayer.has_multiplayer_peer():
 		chat.text += "[ERROR]: No estás conectado a ninguna red.\n"
 		return
+	send_message()
 
+func send_message():
 	if message.text.strip_edges() != "":
 		update_chat.rpc(Global.steam_username, message.text)
 		message.text = ""
+
+
+func _on_message_text_submitted(new_text: String) -> void:
+	send_message()
