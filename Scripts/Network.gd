@@ -25,7 +25,7 @@ func _process(_delta: float) -> void:
 	Steam.run_callbacks()
 
 
-func _on_lobby_chat_update(this_lobby_id: int, change_id: int, making_change_id: int, chat_state: int):
+func _on_lobby_chat_update(_this_lobby_id: int, change_id: int, _making_change_id: int, chat_state: int):
 	# chat_state 1 = Entró, 2 = Salió, 8 = Desconectado
 	if chat_state == Steam.CHAT_MEMBER_STATE_CHANGE_ENTERED:
 		print("Usuario " + str(change_id) + " ha entrado.")
@@ -74,7 +74,7 @@ func _on_lobby_joined_requested(friend_lobby_id: int, friend_id: int):
 func joint_lobby(this_lobby_id :int):
 	Steam.joinLobby(this_lobby_id)
 	
-func _on_lobby_joined(this_lobby_id:int, _permissions:int,_locked:bool,response:int):
+func _on_lobby_joined(this_lobby_id:int, _permissions:int, _locked:bool, response:int):
 	if response == Steam.CHAT_ROOM_ENTER_RESPONSE_SUCCESS:
 		lobby_id = this_lobby_id
 		
@@ -82,20 +82,27 @@ func _on_lobby_joined(this_lobby_id:int, _permissions:int,_locked:bool,response:
 		var my_steam_id = Steam.getSteamID()
 		
 		if host_id == my_steam_id:
-			print("soy el host")
+			print("Soy el host, no necesito crear cliente.")
 			return
-		multiplayer.multiplayer_peer = null
+		
+		# --- CORRECCIÓN AQUÍ ---
+		# Desconectamos el peer de Godot
+		multiplayer.multiplayer_peer = null 
+		
+		# Si el peer interno de Steam tiene una conexión vieja, la cerramos
+		if peer.get_connection_status() != MultiplayerPeer.CONNECTION_DISCONNECTED:
+			peer.close()
+		# -----------------------
+
 		var error = peer.create_client(host_id, 0)
 		if error == OK:
-			multiplayer.multiplayer_peer = peer # Le decimos a Godot que use Steam
+			multiplayer.multiplayer_peer = peer
 			print("Conectado como cliente al Host: ", host_id)
-		else:
-			print("Error al iniciar cliente" , error)
 			
-		# Cambiamos a la misma escena del juego
-		Global.change_scene("res://Scenes/lobby.tscn")
-		print("2")
-		emit_signal("player_joined",Global.steam_id)
+			# Solo cambiamos de escena si la conexión fue exitosa
+			Global.change_scene("res://Scenes/lobby.tscn")
+		else:
+			print("Error al iniciar cliente: " , error)
 
 
 func get_lobby_members():

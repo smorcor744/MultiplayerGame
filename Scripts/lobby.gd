@@ -98,5 +98,11 @@ func _on_refresh_pressed() -> void:
 
 
 func _on_send_pressed() -> void:
-	update_chat.rpc(Global.steam_username,message.text)
-	message.text = ""
+	# Verificamos si hay conexión antes de enviar RPC
+	if not multiplayer.has_multiplayer_peer():
+		chat.text += "[ERROR]: No estás conectado a ninguna red.\n"
+		return
+
+	if message.text.strip_edges() != "":
+		update_chat.rpc(Global.steam_username, message.text)
+		message.text = ""
