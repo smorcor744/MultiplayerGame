@@ -97,7 +97,7 @@ func _on_lobby_joined(this_lobby_id:int, _permissions:int, _locked:bool, respons
 			peer.close()
 		# -----------------------
 
-		var error = peer.create_client(Steam.getLobbyOwner(lobby_id))
+		var error = peer.create_client(my_steam_id)
 		if error == OK:
 			multiplayer.multiplayer_peer = peer
 			print("Conectado como cliente al Host: ", host_id)
