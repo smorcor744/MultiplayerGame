@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://bwnodfhn3tfpg"]
+[gd_scene load_steps=14 format=3 uid="uid://bwnodfhn3tfpg"]
 
 [ext_resource type="Script" uid="uid://dwrwla5g3s8yr" path="res://Scripts/lobby.gd" id="1_nvaej"]
 
@@ -34,6 +34,11 @@ VScrollBar/styles/grabber_pressed = SubResource("StyleBoxEmpty_u1o2k")
 VScrollBar/styles/scroll = SubResource("StyleBoxEmpty_avk8s")
 VScrollBar/styles/scroll_focus = SubResource("StyleBoxEmpty_ruji2")
 
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_nvaej"]
+properties/0/path = NodePath("Vbox/RichTextLabel:text")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+
 [node name="Lobby" type="Control"]
 layout_mode = 3
 anchors_preset = 15
@@ -46,20 +51,20 @@ script = ExtResource("1_nvaej")
 [node name="ExitLobby" type="Button" parent="."]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.9513889
-anchor_top = 0.012345679
-anchor_right = 0.9930556
-anchor_bottom = 0.086419754
+anchor_left = 0.951389
+anchor_top = 0.0123457
+anchor_right = 0.993056
+anchor_bottom = 0.0864198
 grow_horizontal = 0
 text = "x"
 metadata/_edit_use_anchors_ = true
 
 [node name="Vbox" type="VBoxContainer" parent="."]
 layout_mode = 0
-anchor_left = 0.020833334
-anchor_top = 0.5925926
-anchor_right = 0.44444445
-anchor_bottom = 0.9552469
+anchor_left = 0.0208333
+anchor_top = 0.592593
+anchor_right = 0.444444
+anchor_bottom = 0.955247
 offset_bottom = -3.0
 alignment = 2
 metadata/_edit_use_anchors_ = true
@@ -111,10 +116,10 @@ vertical_alignment = 1
 [node name="InvitePanel" type="Panel" parent="."]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.7152778
-anchor_top = 0.28395063
-anchor_right = 0.9513889
-anchor_bottom = 0.90123457
+anchor_left = 0.715278
+anchor_top = 0.283951
+anchor_right = 0.951389
+anchor_bottom = 0.901235
 grow_horizontal = 0
 grow_vertical = 0
 metadata/_edit_use_anchors_ = true
@@ -122,10 +127,10 @@ metadata/_edit_use_anchors_ = true
 [node name="ScrollContainer" type="ScrollContainer" parent="."]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.7222222
-anchor_top = 0.2962963
-anchor_right = 0.9444444
-anchor_bottom = 0.8888889
+anchor_left = 0.722222
+anchor_top = 0.296296
+anchor_right = 0.944444
+anchor_bottom = 0.888889
 grow_horizontal = 2
 grow_vertical = 2
 theme = SubResource("Theme_jigxi")
@@ -145,6 +150,9 @@ offset_top = 592.0
 offset_right = 996.0
 offset_bottom = 623.0
 text = "Refresh"
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_nvaej")
 
 [connection signal="pressed" from="ExitLobby" to="." method="_on_exit_lobby_pressed"]
 [connection signal="pressed" from="Vbox/HBoxContainer/Send" to="." method="_on_send_pressed"]
