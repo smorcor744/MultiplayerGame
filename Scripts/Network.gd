@@ -63,9 +63,12 @@ func _on_lobby_create(connectd: int, this_lobby_id:int):
 		else:
 			print("Error al iniciar host",error)
 		emit_signal("player_joined",Global.steam_id)
-
+		
 		Global.change_scene("res://Scenes/lobby.tscn")
 		emit_signal("player_joined",Global.steam_id)
+
+
+
 
 func _on_lobby_joined_requested(friend_lobby_id: int, friend_id: int):
 	print("Intentando unirse a lobby: ", friend_lobby_id,"ID Friend",friend_id)
@@ -94,7 +97,7 @@ func _on_lobby_joined(this_lobby_id:int, _permissions:int, _locked:bool, respons
 			peer.close()
 		# -----------------------
 
-		var error = peer.create_client(host_id, 0)
+		var error = peer.create_client(Steam.getLobbyOwner(lobby_id))
 		if error == OK:
 			multiplayer.multiplayer_peer = peer
 			print("Conectado como cliente al Host: ", host_id)
