@@ -7,7 +7,7 @@ var lobby_id : int = 0
 var lobby_members:Array = []
 var lobby_members_max :int = 20
 
-var peer = SteamMultiplayerPeer.new()
+var peer : SteamMultiplayerPeer
 
 
 signal player_joined(user)
@@ -51,7 +51,7 @@ func _on_lobby_create(connectd: int, this_lobby_id:int):
 	if connectd == 1:
 		lobby_id = this_lobby_id
 		print(lobby_id)
-		
+		peer = SteamMultiplayerPeer.new()
 		Steam.setLobbyJoinable(lobby_id,true)
 		
 		Steam.setLobbyData(lobby_id,"name",Global.steam_username +"lobby")
@@ -80,7 +80,7 @@ func joint_lobby(this_lobby_id :int):
 func _on_lobby_joined(this_lobby_id:int, _permissions:int, _locked:bool, response:int):
 	if response == Steam.CHAT_ROOM_ENTER_RESPONSE_SUCCESS:
 		lobby_id = this_lobby_id
-		
+		peer = SteamMultiplayerPeer.new()
 		var host_id = Steam.getLobbyOwner(lobby_id)
 		var my_steam_id = Steam.getSteamID()
 		
