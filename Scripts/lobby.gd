@@ -3,13 +3,25 @@ extends Control
 @onready var chat: RichTextLabel = $Vbox/RichTextLabel
 @onready var message: LineEdit = $Vbox/HBoxContainer/Message
 
+
 func _ready() -> void:
 	_on_refresh_lobbies_pressed()
 	Network.player_joined.connect(_on_player_joined_lobby)
 	Network.lobby_player_update.connect(_on_steam_lobby_update)
 	
-	if multiplayer.has_multiplayer_peer():
+	# --- CORRECCIÓN DEL ERROR ---
+	# Verificamos si existe el peer Y si el estado es CONECTADO
+	if multiplayer.multiplayer_peer:
+		if multiplayer.multiplayer_peer.get_connection_status() == MultiplayerPeer.CONNECTION_CONNECTED:
+			# Si ya estamos conectados (ej. somos el Host), enviamos el mensaje
 			update_chat.rpc(Global.steam_username, "se ha unido a la lobby.")
+		elif multiplayer.multiplayer_peer.get_connection_status() == MultiplayerPeer.CONNECTION_CONNECTING:
+			# Si somos Cliente y aún estamos conectando, esperamos a la señal oficial
+			multiplayer.connected_to_server.connect(_on_conexion_completada, CONNECT_ONE_SHOT)
+
+# Función auxiliar para enviar el mensaje solo cuando la conexión termine
+func _on_conexion_completada():
+	update_chat.rpc(Global.steam_username, "se ha unido a la lobby.")
 
 func _on_steam_lobby_update(type: int, user_id: int):
 	var user_name = Steam.getFriendPersonaName(user_id)
