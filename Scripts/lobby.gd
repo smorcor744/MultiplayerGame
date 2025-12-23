@@ -14,14 +14,14 @@ func _ready() -> void:
 	if multiplayer.multiplayer_peer:
 		if multiplayer.multiplayer_peer.get_connection_status() == MultiplayerPeer.CONNECTION_CONNECTED:
 			# Si ya estamos conectados (ej. somos el Host), enviamos el mensaje
-			update_chat.rpc(Global.steam_username, "se ha unido a la lobby.")
+			rpc("update_chat",Global.steam_username, "se ha unido a la lobby.")
 		elif multiplayer.multiplayer_peer.get_connection_status() == MultiplayerPeer.CONNECTION_CONNECTING:
 			# Si somos Cliente y aún estamos conectando, esperamos a la señal oficial
 			multiplayer.connected_to_server.connect(_on_conexion_completada, CONNECT_ONE_SHOT)
 
 # Función auxiliar para enviar el mensaje solo cuando la conexión termine
 func _on_conexion_completada():
-	update_chat.rpc(Global.steam_username, "se ha unido a la lobby.")
+	rpc("update_chat",Global.steam_username, "se ha unido a la lobby.")
 
 func _on_steam_lobby_update(type: int, user_id: int):
 	var user_name = Steam.getFriendPersonaName(user_id)
@@ -118,7 +118,7 @@ func _on_send_pressed() -> void:
 
 func send_message():
 	if message.text.strip_edges() != "":
-		update_chat.rpc(Global.steam_username, message.text)
+		rpc("update_chat",Global.steam_username, message.text)
 		message.text = ""
 
 
