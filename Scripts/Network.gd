@@ -87,48 +87,54 @@ func _on_lobby_joined_requested(friend_lobby_id: int, friend_id: int):
 func joint_lobby(this_lobby_id :int):
 	Steam.joinLobby(this_lobby_id)
 	
-# REEMPLAZA la función _on_lobby_joined con esta versión corregida:
+# network.gd - Versión simplificada
 func _on_lobby_joined(this_lobby_id:int, _permissions:int, _locked:bool, response:int):
 	if response == Steam.CHAT_ROOM_ENTER_RESPONSE_SUCCESS:
 		lobby_id = this_lobby_id
 		var host_id = Steam.getLobbyOwner(lobby_id)
-		var my_steam_id = Steam.getSteamID()
 		
-		print("Lobby unido exitosamente. Host ID: ", host_id)
-		print("Mi Steam ID: ", my_steam_id)
+		if host_id == Steam.getSteamID():
+			return  # Ya es host
 		
-		# Si soy el host, ya tengo el servidor creado
-		if host_id == my_steam_id:
-			print("Soy el host, ya tengo servidor activo.")
-			return
+		print("Conectando al host: ", host_id)
 		
-		# IMPORTANTE: Esperar un frame para asegurar que Steam está listo
-		await get_tree().process_frame
+		# Esperar un momento para que Steam esté listo
+		await get_tree().create_timer(0.5).timeout
 		
-		# Crear nuevo peer para el cliente
-		var new_peer = SteamMultiplayerPeer.new()
-		
-		# Configurar el cliente
-		var error = new_peer.create_client(host_id, 0)
-		print("Intentando conectar como cliente. Error code: ", error)
+		# Crear y configurar el cliente
+		var client_peer = SteamMultiplayerPeer.new()
+		var error = client_peer.create_client(host_id, 0)
 		
 		if error == OK:
-			# Esperar a que la conexión esté lista
-			await get_tree().create_timer(0.5).timeout
+			print("Cliente Steam creado, asignando a Godot...")
+			multiplayer.multiplayer_peer = client_peer
 			
-			multiplayer.multiplayer_peer = new_peer
-			peer = new_peer
+			# Esperar explícitamente a la conexión
+			await get_tree().create_timer(2.0).timeout
 			
-			print("Conexión establecida con el host")
-			print("Estado de conexión: ", multiplayer.multiplayer_peer.get_connection_status())
+			# Verificar estado
+			var status = multiplayer.multiplayer_peer.get_connection_status()
+			print("Estado de conexión después de 2s: ", status)
 			
-			# Cambiar escena solo si estamos conectados
-			if multiplayer.multiplayer_peer.get_connection_status() == MultiplayerPeer.CONNECTION_CONNECTED:
+			if status == MultiplayerPeer.CONNECTION_CONNECTED:
+				print("¡Conectado! Cambiando escena...")
 				Global.change_scene("res://Scenes/lobby.tscn")
+			elif status == MultiplayerPeer.CONNECTION_CONNECTING:
+				print("Todavía conectando... esperando más")
+				await get_tree().create_timer(3.0).timeout
+				status = multiplayer.multiplayer_peer.get_connection_status()
+				print("Estado después de 5s total: ", status)
+				
+				if status == MultiplayerPeer.CONNECTION_CONNECTED:
+					Global.change_scene("res://Scenes/lobby.tscn")
+				else:
+					print("Fallo de conexión. Estado: ", status)
+					multiplayer.multiplayer_peer = null
 			else:
-				print("ERROR: No conectado después de crear cliente")
+				print("Estado inesperado: ", status)
+				multiplayer.multiplayer_peer = null
 		else:
-			print("Error crítico al crear cliente: ", error)
+			print("Error FATAL al crear cliente Steam: ", error)
 
 
 func get_lobby_members():

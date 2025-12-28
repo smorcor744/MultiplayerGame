@@ -20,19 +20,7 @@ func _ready() -> void:
 			# Si somos Cliente y aún estamos conectando, esperamos a la señal oficial
 			multiplayer.connected_to_server.connect(_on_conexion_completada, CONNECT_ONE_SHOT)
 			print(22)
-func _process(_delta: float) -> void:
-	# Debug: Mostrar estado de conexión
-	if multiplayer.has_multiplayer_peer():
-		var status = multiplayer.multiplayer_peer.get_connection_status()
-		var status_text = ""
-		match status:
-			MultiplayerPeer.CONNECTION_DISCONNECTED: status_text = "Desconectado"
-			MultiplayerPeer.CONNECTION_CONNECTING: status_text = "Conectando..."
-			MultiplayerPeer.CONNECTION_CONNECTED: status_text = "Conectado"
-			_: status_text = str(status)
-		
-		# Puedes mostrar esto en un Label si quieres
-		print("Estado de conexión: ", status_text)
+
 
 # Función auxiliar para enviar el mensaje solo cuando la conexión termine
 func _on_conexion_completada():
