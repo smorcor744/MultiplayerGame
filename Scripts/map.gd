@@ -1,7 +1,13 @@
 extends Node2D
 const PLAYER = preload("uid://dh8pwqukj5i7o")
+@onready var multiplayer_spawner = $MultiplayerSpawner  # Asegúrate de que existe
+@export var player_scene: PackedScene
 
 func _ready():
+	if has_node("MultiplayerSpawner"):
+		multiplayer_spawner = $MultiplayerSpawner
+		multiplayer_spawner.spawn_function = _custom_spawn_player
+
 	# Solo el servidor (Host) tiene autoridad para crear jugadores
 	if multiplayer.is_server():
 		# Conectar señal cuando alguien entra
@@ -14,13 +20,34 @@ func _ready():
 		# Si ya hay gente conectada antes de cargar el mapa:
 		for id in multiplayer.get_peers():
 			_add_player(id)
-
-func _add_player(id: int):
-	var player = PLAYER.instantiate()
+func _custom_spawn_player(data) -> Node:
+	var peer_id = data
+	print("Spawneando jugador custom para: ", peer_id)
 	
-	player.name = str(id) # IMPORTANTE: El nombre debe ser la ID de red
-	$Players.add_child(player) # El MultiplayerSpawner detectará esto y lo replicará a todos
+	var player = player_scene.instantiate()
+	player.name = str(peer_id)
+	return player
+func _add_player(id: int):
+	print("Añadiendo jugador con ID: ", id)
+	
+	if has_node("MultiplayerSpawner"):
+		# Usar el spawner
+		multiplayer_spawner.spawn(id)
+	else:
+		# Fallback: crear manualmente
+		var player = player_scene.instantiate()
+		player.name = str(id)
+		
+		# Asegurar MultiplayerSynchronizer
+		if not player.has_node("MultiplayerSynchronizer"):
+			var sync = MultiplayerSynchronizer.new()
+			sync.name = "MultiplayerSynchronizer"
+			player.add_child(sync, true)
+		
+		$Players.add_child(player, true)
+		print("Jugador añadido manualmente: ", player.name)
 
 func _remove_player(id: int):
+	print("Removiendo jugador: ", id)
 	if $Players.has_node(str(id)):
 		$Players.get_node(str(id)).queue_free()

@@ -32,6 +32,11 @@ func _ready():
 	$CoyoteTimer.wait_time = coyote_frames / 60.0
 	$Label.text = Global.steam_username
 	print(is_multiplayer_authority())
+	if not has_node("MultiplayerSynchronizer"):
+		var sync = MultiplayerSynchronizer.new()
+		sync.name = "MultiplayerSynchronizer"
+		add_child(sync, true)
+		print("MultiplayerSynchronizer creado para jugador: ", name)
 
 func _physics_process(delta):
 	if not is_multiplayer_authority(): return 
