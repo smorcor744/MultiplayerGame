@@ -15,9 +15,24 @@ func _ready() -> void:
 		if multiplayer.multiplayer_peer.get_connection_status() == MultiplayerPeer.CONNECTION_CONNECTED:
 			# Si ya estamos conectados (ej. somos el Host), enviamos el mensaje
 			rpc("update_chat",Global.steam_username, "se ha unido a la lobby.")
+			print(11)
 		elif multiplayer.multiplayer_peer.get_connection_status() == MultiplayerPeer.CONNECTION_CONNECTING:
 			# Si somos Cliente y aún estamos conectando, esperamos a la señal oficial
 			multiplayer.connected_to_server.connect(_on_conexion_completada, CONNECT_ONE_SHOT)
+			print(22)
+func _process(_delta: float) -> void:
+	# Debug: Mostrar estado de conexión
+	if multiplayer.has_multiplayer_peer():
+		var status = multiplayer.multiplayer_peer.get_connection_status()
+		var status_text = ""
+		match status:
+			MultiplayerPeer.CONNECTION_DISCONNECTED: status_text = "Desconectado"
+			MultiplayerPeer.CONNECTION_CONNECTING: status_text = "Conectando..."
+			MultiplayerPeer.CONNECTION_CONNECTED: status_text = "Conectado"
+			_: status_text = str(status)
+		
+		# Puedes mostrar esto en un Label si quieres
+		print("Estado de conexión: ", status_text)
 
 # Función auxiliar para enviar el mensaje solo cuando la conexión termine
 func _on_conexion_completada():
@@ -110,10 +125,17 @@ func _on_refresh_pressed() -> void:
 
 
 func _on_send_pressed() -> void:
-	# Verificamos si hay conexión antes de enviar RPC
+	# 1. Verificamos si existe el peer
 	if not multiplayer.has_multiplayer_peer():
-		chat.text += "[ERROR]: No estás conectado a ninguna red.\n"
+		chat.text += "[ERROR]: No hay sistema multijugador iniciado.\n"
 		return
+	
+	# 2. CORRECCIÓN: Verificamos si el estado es realmente CONECTADO
+	if multiplayer.multiplayer_peer.get_connection_status() != MultiplayerPeer.CONNECTION_CONNECTED:
+		chat.text += "[SISTEMA]: Todavía conectando con el servidor, espera un momento...\n"
+		return
+
+	# Si pasa las comprobaciones, enviamos
 	send_message()
 
 func send_message():
@@ -122,5 +144,5 @@ func send_message():
 		message.text = ""
 
 
-func _on_message_text_submitted(new_text: String) -> void:
+func _on_message_text_submitted(_new_text: String) -> void:
 	send_message()

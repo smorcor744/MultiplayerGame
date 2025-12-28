@@ -19,11 +19,19 @@ func _ready() -> void:
 	Steam.lobby_joined.connect(_on_lobby_joined)
 	Steam.join_requested.connect(_on_lobby_joined_requested)
 	Steam.lobby_chat_update.connect(_on_lobby_chat_update)
+	multiplayer.connected_to_server.connect(_on_connected_to_server)
+	multiplayer.connection_failed.connect(_on_connection_failed)
+
 	multiplayer.server_disconnected.connect(_on_server_disconnected)
 
 func _process(_delta: float) -> void:
 	Steam.run_callbacks()
+func _on_connected_to_server():
+	print("¡CONEXIÓN EXITOSA al servidor!")
 
+func _on_connection_failed():
+	print("FALLO en la conexión al servidor")
+	leave_lobby()
 
 func _on_lobby_chat_update(_this_lobby_id: int, change_id: int, _making_change_id: int, chat_state: int):
 	# chat_state 1 = Entró, 2 = Salió, 8 = Desconectado
@@ -51,6 +59,8 @@ func _on_lobby_create(connectd: int, this_lobby_id:int):
 	if connectd == 1:
 		lobby_id = this_lobby_id
 		print(lobby_id)
+		await get_tree().process_frame
+
 		peer = SteamMultiplayerPeer.new()
 		Steam.setLobbyJoinable(lobby_id,true)
 		
@@ -77,35 +87,48 @@ func _on_lobby_joined_requested(friend_lobby_id: int, friend_id: int):
 func joint_lobby(this_lobby_id :int):
 	Steam.joinLobby(this_lobby_id)
 	
+# REEMPLAZA la función _on_lobby_joined con esta versión corregida:
 func _on_lobby_joined(this_lobby_id:int, _permissions:int, _locked:bool, response:int):
 	if response == Steam.CHAT_ROOM_ENTER_RESPONSE_SUCCESS:
 		lobby_id = this_lobby_id
-		peer = SteamMultiplayerPeer.new()
 		var host_id = Steam.getLobbyOwner(lobby_id)
 		var my_steam_id = Steam.getSteamID()
 		
+		print("Lobby unido exitosamente. Host ID: ", host_id)
+		print("Mi Steam ID: ", my_steam_id)
+		
+		# Si soy el host, ya tengo el servidor creado
 		if host_id == my_steam_id:
-			print("Soy el host, no necesito crear cliente.")
+			print("Soy el host, ya tengo servidor activo.")
 			return
 		
-		# --- CORRECCIÓN AQUÍ ---
-		# Desconectamos el peer de Godot
-		multiplayer.multiplayer_peer = null 
+		# IMPORTANTE: Esperar un frame para asegurar que Steam está listo
+		await get_tree().process_frame
 		
-		# Si el peer interno de Steam tiene una conexión vieja, la cerramos
-		if peer.get_connection_status() != MultiplayerPeer.CONNECTION_DISCONNECTED:
-			peer.close()
-		# -----------------------
-
-		var error = peer.create_client(host_id, 0)
+		# Crear nuevo peer para el cliente
+		var new_peer = SteamMultiplayerPeer.new()
+		
+		# Configurar el cliente
+		var error = new_peer.create_client(host_id, 0)
+		print("Intentando conectar como cliente. Error code: ", error)
+		
 		if error == OK:
-			multiplayer.multiplayer_peer = peer
-			print("Conectado como cliente al Host: ", host_id)
+			# Esperar a que la conexión esté lista
+			await get_tree().create_timer(0.5).timeout
 			
-			# Solo cambiamos de escena si la conexión fue exitosa
-			Global.change_scene("res://Scenes/lobby.tscn")
+			multiplayer.multiplayer_peer = new_peer
+			peer = new_peer
+			
+			print("Conexión establecida con el host")
+			print("Estado de conexión: ", multiplayer.multiplayer_peer.get_connection_status())
+			
+			# Cambiar escena solo si estamos conectados
+			if multiplayer.multiplayer_peer.get_connection_status() == MultiplayerPeer.CONNECTION_CONNECTED:
+				Global.change_scene("res://Scenes/lobby.tscn")
+			else:
+				print("ERROR: No conectado después de crear cliente")
 		else:
-			print("Error al iniciar cliente: " , error)
+			print("Error crítico al crear cliente: ", error)
 
 
 func get_lobby_members():
