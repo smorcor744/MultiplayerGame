@@ -34,7 +34,7 @@ func _on_steam_lobby_update(type: int, user_id: int):
 	elif type == Steam.CHAT_MEMBER_STATE_CHANGE_LEFT:
 		chat.text += "[SISTEMA]: " + user_name + " ha salido.\n"
 
-@rpc("authority","call_local","reliable")
+@rpc("any_peer","call_local","reliable")
 func update_chat(username:String,mensaje:String):
 	chat.text += str(username+": " + mensaje +"\n")
 
