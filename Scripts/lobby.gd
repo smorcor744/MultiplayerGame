@@ -94,14 +94,14 @@ func _on_lobby_item_pressed(friend_steam_id:int) -> void:
 		return
 	var success = Steam.inviteUserToLobby(my_lobby_id,friend_steam_id)
 	if success:
-		print("Invitation sended to", friend_steam_id)
+		print("Invitation sended to ", friend_steam_id)
 	else:
 		print("Error al enviar la invitacion")
 	print("INVITATION SENDED")
 
 func _on_start_game_pressed() -> void:
 	if multiplayer.is_server():
-		Network.start_game.rpc("res://Scenes/map.tscn")
+		rpc("start_game","res://Scenes/map.tscn")
 	
 
 func _on_exit_lobby_pressed() -> void:
@@ -134,3 +134,9 @@ func send_message():
 
 func _on_message_text_submitted(_new_text: String) -> void:
 	send_message()
+
+
+@rpc("authority","call_local", "reliable")
+func start_game(game_scene_path:String):
+	
+	Global.change_scene(game_scene_path)
