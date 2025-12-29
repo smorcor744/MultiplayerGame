@@ -8,7 +8,11 @@ extends CharacterBody2D
 @onready var animations_player = $AnimatedSprite2D
 const SPEED = 200.0
 const JUMP_VELOCITY = -350.0
+const DODGE_SPEED = 250.0
 var jumping = false
+var dodging = false
+var facing_direction = 1
+var attacking = false
 var coyote_frames = 6  # How many in-air frames to allow jumping
 var coyote = false  # Track whether we're in coyote time or not
 var last_floor = false  # Last frame's on-floor state
@@ -40,7 +44,24 @@ func _ready():
 
 func _physics_process(delta):
 	if not is_multiplayer_authority(): return 
+	
+	if knockback_timer > 0:
+		velocity = knockback_vector
+		knockback_timer -= delta
+		move_and_slide()
+		return
+	
+	if attacking:
+		return
 
+	
+	if dodging:
+		# Mantenemos la velocidad constante en la dirección que miramos
+		velocity.x = facing_direction * DODGE_SPEED
+		velocity.y = 0 # Opcional: poner a 0 para que no caiga mientras rueda (dash aéreo)
+		move_and_slide()
+		return
+	
 	# Verifica si estás en el suelo antes de procesar física
 	var on_floor_now = is_on_floor()
 
@@ -59,13 +80,30 @@ func _physics_process(delta):
 		velocity.y += gravity * delta
 
 	# Manejo de salto
-	if Input.is_action_just_pressed("jump") and (on_floor_now or coyote):
+	if Input.is_action_just_pressed("jump") and (on_floor_now or coyote)  and !attacking:
 		jumping = true
 		animations_player.play("jump")
 		velocity.y = JUMP_VELOCITY
 		coyote = false  # Cancelamos coyote al saltar
+	
+	
+	# Manejo de dodge
+	if Input.is_action_just_pressed("dodge") and (on_floor_now or coyote) and not dodging and !attacking:
+		dodging = true
+		invulnerable = true
+		$DamageTimer.start()
+		animations_player.play("dodge2")
+		velocity.x = JUMP_VELOCITY
+	
+	# Manejo de attack
+	if Input.is_action_just_pressed("attack") and (on_floor_now or coyote) and not dodging and !attacking:
+		animations_player.play("attack")
+		attacking = true
+		
+
 
 	# Animaciones de movimiento vertical
+	var direction = Input.get_axis("left", "right")
 	if !on_floor_now and velocity.y < 0:
 		animations_player.play("jump")
 	elif !on_floor_now and velocity.y > 0:
@@ -74,9 +112,10 @@ func _physics_process(delta):
 		animations_player.play("idle")
 
 	# Movimiento horizontal
-	var direction = Input.get_axis("left", "right")
+	
 	if direction:
-		if !jumping:
+		facing_direction = direction
+		if !jumping and !dodging and !attacking:
 			animations_player.play("run")
 		handel_flip()
 		velocity.x = direction * SPEED
@@ -100,9 +139,9 @@ func _physics_process(delta):
 
 
 func handel_flip():
-	if velocity.x > 0:
+	if facing_direction > 0:
 		animations_player.flip_h = false
-	if velocity.x < 0:
+	elif facing_direction < 0:
 		animations_player.flip_h = true
 
 func take_damage(amount):
@@ -147,6 +186,10 @@ func _on_coyote_timer_timeout():
 func _on_animation_finished():
 	if animations_player.animation == "dead":
 		respawn()
+	elif animations_player.animation == "dodge2":
+		dodging = false
+	elif animations_player.animation == "attack":
+		attacking = false
 
 
 func _on_damage_timer_timeout() -> void:

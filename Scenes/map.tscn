@@ -36,12 +36,39 @@ position = Vector2(609, 269)
 scale = Vector2(1.4375, 1)
 texture = ExtResource("1_ci6au")
 
-[node name="StaticBody2D" type="StaticBody2D" parent="."]
+[node name="suelo" type="StaticBody2D" parent="."]
 position = Vector2(609, 269)
 scale = Vector2(1.4375, 1)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
-position = Vector2(-244.17392, 333)
+[node name="CollisionShape2D" type="CollisionShape2D" parent="suelo"]
+position = Vector2(0.6956522, 331)
+scale = Vector2(0.6956522, 1)
+shape = SubResource("WorldBoundaryShape2D_p3ir5")
+
+[node name="pared_l" type="StaticBody2D" parent="."]
+position = Vector2(0, 269)
+rotation = 1.5707964
+scale = Vector2(1.4375, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="pared_l"]
+scale = Vector2(0.6956522, 1)
+shape = SubResource("WorldBoundaryShape2D_p3ir5")
+
+[node name="pared_r" type="StaticBody2D" parent="."]
+position = Vector2(1150, 234.99997)
+rotation = -1.5707964
+scale = Vector2(1.4375, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="pared_r"]
+scale = Vector2(0.6956522, 1)
+shape = SubResource("WorldBoundaryShape2D_p3ir5")
+
+[node name="techo" type="StaticBody2D" parent="."]
+position = Vector2(895, 0)
+rotation = 3.1415927
+scale = Vector2(1.4375, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="techo"]
 scale = Vector2(0.6956522, 1)
 shape = SubResource("WorldBoundaryShape2D_p3ir5")
 
