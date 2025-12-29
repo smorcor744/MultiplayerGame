@@ -1,6 +1,6 @@
 extends Node2D
 const PLAYER = preload("uid://dh8pwqukj5i7o")
-@onready var multiplayer_spawner = $MultiplayerSpawner  # Asegúrate de que existe
+@onready var multiplayer_spawner = $Spawners/MultiplayerSpawner  # Asegúrate de que existe
 @export var player_scene: PackedScene
 
 func _ready():
