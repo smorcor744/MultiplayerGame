@@ -1,53 +1,58 @@
 extends Node2D
-const PLAYER = preload("uid://dh8pwqukj5i7o")
-@onready var multiplayer_spawner = $Spawners/MultiplayerSpawner  # Asegúrate de que existe
+
+# Referencia a la escena del jugador
 @export var player_scene: PackedScene
 
+# Referencias a nodos hijos
+@onready var multiplayer_spawner: MultiplayerSpawner = $MultiplayerSpawner
+@onready var players_container: Node2D = $Players
+
 func _ready():
-	if has_node("MultiplayerSpawner"):
-		multiplayer_spawner = $MultiplayerSpawner
-		multiplayer_spawner.spawn_function = _custom_spawn_player
-
-	# Solo el servidor (Host) tiene autoridad para crear jugadores
+	# 1. Configurar la función de spawn (Tanto en Cliente como en Servidor)
+	multiplayer_spawner.spawn_function = _spawn_player_function
+	
+	# 2. Lógica exclusiva del SERVIDOR (HOST)
 	if multiplayer.is_server():
-		# Conectar señal cuando alguien entra
-		multiplayer.peer_connected.connect(_add_player)
-		multiplayer.peer_disconnected.connect(_remove_player)
+		print("Soy el Host, iniciando spawns...")
 		
-		# Spawneate a ti mismo (Host)
-		_add_player(1) # 1 es siempre la ID del host en Godot
+		# Conectar señales para cuando alguien entra/sale DESPUÉS de cargar el mapa
+		multiplayer.peer_connected.connect(_on_peer_connected)
+		multiplayer.peer_disconnected.connect(_on_peer_disconnected)
+		
+		# 3. Spawnear a los jugadores que YA están conectados (incluyendo al Host)
+		# Creamos una lista con todos los IDs: El Host (1) + Los Clientes
+		var all_peers = multiplayer.get_peers()
+		all_peers.append(1) # Agregamos al Host (ID 1) a la lista
+		
+		for peer_id in all_peers:
+			_on_peer_connected(peer_id)
 
-		# Si ya hay gente conectada antes de cargar el mapa:
-		for id in multiplayer.get_peers():
-			_add_player(id)
-func _custom_spawn_player(data) -> Node:
+# Esta función es llamada automáticamente por el MultiplayerSpawner
+# Se ejecuta en el Servidor y el resultado se replica en los Clientes
+func _spawn_player_function(data) -> Node:
 	var peer_id = data
-	print("Spawneando jugador custom para: ", peer_id)
-	
 	var player = player_scene.instantiate()
-	player.name = str(peer_id)
-	return player
-func _add_player(id: int):
-	print("Añadiendo jugador con ID: ", id)
 	
-	if has_node("MultiplayerSpawner"):
-		# Usar el spawner
-		multiplayer_spawner.spawn(id)
-	else:
-		# Fallback: crear manualmente
-		var player = player_scene.instantiate()
-		player.name = str(id)
-		
-		# Asegurar MultiplayerSynchronizer
-		if not player.has_node("MultiplayerSynchronizer"):
-			var sync = MultiplayerSynchronizer.new()
-			sync.name = "MultiplayerSynchronizer"
-			player.add_child(sync, true)
-		
-		$Players.add_child(player, true)
-		print("Jugador añadido manualmente: ", player.name)
+	# Es vital que el nombre sea el ID para facilitar búsquedas
+	player.name = str(peer_id) 
+	
+	# Configura la posición inicial si es necesario
+	player.position = Vector2(100, 100) # O usa puntos de spawn aleatorios
+	
+	# Importante: Asignar la autoridad para que cada jugador controle su muñeco
+	player.set_multiplayer_authority(peer_id)
+	
+	print("Spawn function ejecutada para ID: ", peer_id)
+	return player
 
-func _remove_player(id: int):
-	print("Removiendo jugador: ", id)
-	if $Players.has_node(str(id)):
-		$Players.get_node(str(id)).queue_free()
+# Cuando alguien entra (o al iniciar el mapa para los que ya están)
+func _on_peer_connected(id: int):
+	print("Solicitando spawn para ID: ", id)
+	# Solo llamamos a spawn() en el spawner. Él se encarga del resto.
+	multiplayer_spawner.spawn(id)
+
+# Cuando alguien se desconecta
+func _on_peer_disconnected(id: int):
+	print("Jugador desconectado: ", id)
+	if players_container.has_node(str(id)):
+		players_container.get_node(str(id)).queue_free()

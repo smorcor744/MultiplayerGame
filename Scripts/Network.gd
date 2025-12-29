@@ -97,7 +97,7 @@ func _on_lobby_joined(this_lobby_id:int, _permissions:int, _locked:bool, respons
 			return  # Ya es host
 		
 		print("Conectando al host: ", host_id)
-		Global.change_scene("res://Scenes/connecting.tscn")
+		Global.change_scene("res://Scenes/LoadingScene.tscn")
 		await get_tree().process_frame
 		# Esperar un momento para que Steam esté listo
 		await get_tree().create_timer(0.5).timeout
