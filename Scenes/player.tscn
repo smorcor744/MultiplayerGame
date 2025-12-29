@@ -330,6 +330,9 @@ properties/3/replication_mode = 1
 properties/4/path = NodePath("AnimatedSprite2D:flip_h")
 properties/4/spawn = true
 properties/4/replication_mode = 1
+properties/5/path = NodePath("AnimatedSprite2D:frame")
+properties/5/spawn = true
+properties/5/replication_mode = 1
 
 [node name="Player" type="CharacterBody2D"]
 texture_filter = 1
