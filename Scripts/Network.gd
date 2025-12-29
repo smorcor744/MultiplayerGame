@@ -97,7 +97,8 @@ func _on_lobby_joined(this_lobby_id:int, _permissions:int, _locked:bool, respons
 			return  # Ya es host
 		
 		print("Conectando al host: ", host_id)
-		
+		Global.change_scene("res://Scenes/connecting.tscn")
+		await get_tree().process_frame
 		# Esperar un momento para que Steam esté listo
 		await get_tree().create_timer(0.5).timeout
 		
@@ -129,6 +130,7 @@ func _on_lobby_joined(this_lobby_id:int, _permissions:int, _locked:bool, respons
 					Global.change_scene("res://Scenes/lobby.tscn")
 				else:
 					print("Fallo de conexión. Estado: ", status)
+					Global.change_scene("res://Scenes/main.tscn")
 					multiplayer.multiplayer_peer = null
 			else:
 				print("Estado inesperado: ", status)
