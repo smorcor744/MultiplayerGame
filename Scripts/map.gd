@@ -4,7 +4,7 @@ extends Node2D
 @export var player_scene: PackedScene
 
 # Referencias a nodos hijos
-@onready var multiplayer_spawner: MultiplayerSpawner = $MultiplayerSpawner
+@onready var multiplayer_spawner: MultiplayerSpawner = $Spawners/MultiplayerSpawner
 @onready var players_container: Node2D = $Players
 
 func _ready():
