@@ -56,3 +56,10 @@ func _on_peer_disconnected(id: int):
 	print("Jugador desconectado: ", id)
 	if players_container.has_node(str(id)):
 		players_container.get_node(str(id)).queue_free()
+
+
+
+
+func _on_body_exited(body: Node2D) -> void:
+	if body.is_in_group("Player"):
+		body.queue_free()

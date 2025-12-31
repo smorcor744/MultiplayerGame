@@ -1,0 +1,37 @@
+[gd_scene load_steps=6 format=3 uid="uid://bh1faol61akd3"]
+
+[ext_resource type="Script" uid="uid://c7vbh5t2rrniy" path="res://Scripts/map.gd" id="1_ofola"]
+[ext_resource type="Texture2D" uid="uid://b8tg4fcf2k2j2" path="res://Assets/map.png" id="1_wjr4l"]
+[ext_resource type="PackedScene" uid="uid://bqhhac3m1qesm" path="res://Scenes/player_topdown.tscn" id="2_371a0"]
+[ext_resource type="Script" uid="uid://bltbovrtxw216" path="res://Scripts/multiplayer_spawner.gd" id="4_33p0n"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_qlfii"]
+radius = 123.4083
+
+[node name="Node2D" type="Node2D"]
+texture_filter = 1
+script = ExtResource("1_ofola")
+player_scene = ExtResource("2_371a0")
+
+[node name="Sprite2D2" type="Sprite2D" parent="."]
+position = Vector2(576.00006, 320)
+scale = Vector2(3.50238, -2.0190394)
+texture = ExtResource("1_wjr4l")
+
+[node name="Area2D" type="Area2D" parent="Sprite2D2"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sprite2D2/Area2D"]
+shape = SubResource("CircleShape2D_qlfii")
+
+[node name="Players" type="Node2D" parent="."]
+position = Vector2(613, 123)
+
+[node name="Spawners" type="Node" parent="."]
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="Spawners"]
+spawn_path = NodePath("../../Players")
+script = ExtResource("4_33p0n")
+network_player = ExtResource("2_371a0")
+
+[connection signal="area_exited" from="Sprite2D2/Area2D" to="." method="_on_area_exited"]
+[connection signal="body_exited" from="Sprite2D2/Area2D" to="." method="_on_body_exited"]

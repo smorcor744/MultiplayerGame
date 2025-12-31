@@ -11,6 +11,8 @@ func _ready() -> void:
 		join.disabled = true
 		host.disabled = true
 		lobby_id.text = "Abre el Steam"
+	
+	_on_refresh_lobbies_pressed() 
 
 func _on_join_pressed() -> void:
 	var id:int = int(lobby_id.text)
@@ -34,6 +36,7 @@ func _on_refresh_lobbies_pressed() -> void:
 		var label = Label.new()
 		label.text = "No se encontraron lobbies de amigos."
 		lobby_container.add_child(label)
+		print(222)
 		return
 
 	# friend_lobbies es { lobby_id: [friend_id_1, friend_id_2] }
@@ -57,6 +60,7 @@ func _on_refresh_lobbies_pressed() -> void:
 		lobby_item.pressed.connect(_on_lobby_item_pressed.bind(this_lobby_id))
 		
 		lobby_container.add_child(lobby_item)
+
 
 
 
