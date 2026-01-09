@@ -101,7 +101,7 @@ func _on_lobby_item_pressed(friend_steam_id:int) -> void:
 
 func _on_start_game_pressed() -> void:
 	if multiplayer.is_server():
-		rpc("start_game","res://Scenes/map_topdown.tscn")
+		rpc("start_game","res://Scenes/map.tscn")
 	
 
 func _on_exit_lobby_pressed() -> void:

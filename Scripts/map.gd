@@ -2,6 +2,7 @@ extends Node2D
 
 @export var player_scene: PackedScene
 
+
 @onready var multiplayer_spawner: MultiplayerSpawner = $Spawners/MultiplayerSpawner
 @onready var players_container: Node2D = $Players
 
@@ -35,10 +36,12 @@ func _spawn_player_function(data) -> Node:
 	print("Spawn function ejecutada para ID: ", peer_id)
 	return player
 
+# Cuando alguien entra (o al iniciar el mapa para los que ya están)
 func _on_peer_connected(id: int):
 	print("Solicitando spawn para ID: ", id)
 	multiplayer_spawner.spawn(id)
 
+# Cuando alguien se desconecta
 func _on_peer_disconnected(id: int):
 	print("Jugador desconectado: ", id)
 	if players_container.has_node(str(id)):
