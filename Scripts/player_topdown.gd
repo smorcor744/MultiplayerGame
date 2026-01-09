@@ -4,6 +4,9 @@ extends CharacterBody2D
 @onready var player_join: Marker2D = $Player_join
 @onready var ball_join: RigidBody2D = $RigidBody2D
 
+var knockback_actual: Vector2 = Vector2.ZERO 
+@export var friccion_knockback: float = 10.0
+
 const SPEED = 200.0
 
 func _enter_tree() -> void:
@@ -15,9 +18,13 @@ func _process(_delta: float) -> void:
 	cuerda.add_point(player_join.position)
 	cuerda.add_point(ball_join.position)
 
-func _physics_process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	if not is_multiplayer_authority(): return 
-
+	
+	if knockback_actual.length() > 0:
+		knockback_actual = knockback_actual.lerp(Vector2.ZERO, friccion_knockback * delta)
+		velocity += knockback_actual
+	
 	var direction := Input.get_vector("left", "right","up","down")
 	if direction:
 		velocity = direction * SPEED
@@ -25,3 +32,8 @@ func _physics_process(_delta: float) -> void:
 		velocity = velocity.move_toward(Vector2.ZERO, SPEED)
 		
 	move_and_slide()
+
+
+func recibir_knockback(direccion: Vector2, fuerza: float):
+	# Asignamos el vector de empuje
+	knockback_actual = direccion * fuerza

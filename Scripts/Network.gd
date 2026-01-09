@@ -84,10 +84,10 @@ func _on_lobby_joined_requested(friend_lobby_id: int, friend_id: int):
 	print("Intentando unirse a lobby: ", friend_lobby_id,"ID Friend",friend_id)
 	Steam.joinLobby(friend_lobby_id)
 
-func joint_lobby(this_lobby_id :int):
+func join_lobby(this_lobby_id :int):
 	Steam.joinLobby(this_lobby_id)
-	
-# network.gd - Versión simplificada
+
+
 func _on_lobby_joined(this_lobby_id:int, _permissions:int, _locked:bool, response:int):
 	if response == Steam.CHAT_ROOM_ENTER_RESPONSE_SUCCESS:
 		lobby_id = this_lobby_id
