@@ -5,21 +5,18 @@ extends Control
 
 
 func _ready() -> void:
+	name = "Lobby" 
+	
 	_on_refresh_lobbies_pressed()
 	Network.player_joined.connect(_on_player_joined_lobby)
 	Network.lobby_player_update.connect(_on_steam_lobby_update)
 	
-	# --- CORRECCIÓN DEL ERROR ---
-	# Verificamos si existe el peer Y si el estado es CONECTADO
 	if multiplayer.multiplayer_peer:
-		if multiplayer.multiplayer_peer.get_connection_status() == MultiplayerPeer.CONNECTION_CONNECTED:
-			# Si ya estamos conectados (ej. somos el Host), enviamos el mensaje
-			rpc("update_chat",Global.steam_username, "se ha unido a la lobby.")
-			print(11)
-		elif multiplayer.multiplayer_peer.get_connection_status() == MultiplayerPeer.CONNECTION_CONNECTING:
-			# Si somos Cliente y aún estamos conectando, esperamos a la señal oficial
+		var status = multiplayer.multiplayer_peer.get_connection_status()
+		if status == MultiplayerPeer.CONNECTION_CONNECTED:
+			rpc("update_chat", Global.steam_username, "se ha unido a la lobby.")
+		elif status == MultiplayerPeer.CONNECTION_CONNECTING:
 			multiplayer.connected_to_server.connect(_on_conexion_completada, CONNECT_ONE_SHOT)
-			print(22)
 
 
 # Función auxiliar para enviar el mensaje solo cuando la conexión termine
@@ -101,7 +98,7 @@ func _on_lobby_item_pressed(friend_steam_id:int) -> void:
 
 func _on_start_game_pressed() -> void:
 	if multiplayer.is_server():
-		rpc("start_game","res://Scenes/map_topdown.tscn")
+		Network.rpc("start_game", "res://Scenes/map_topdown.tscn")
 	
 
 func _on_exit_lobby_pressed() -> void:

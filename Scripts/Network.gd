@@ -26,22 +26,15 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	Steam.run_callbacks()
+
 func _on_connected_to_server():
 	print("¡CONEXIÓN EXITOSA al servidor!")
-
+	Global.change_scene("res://Scenes/lobby.tscn")
+	
 func _on_connection_failed():
 	print("FALLO en la conexión al servidor")
 	leave_lobby()
 
-func _on_lobby_chat_update(_this_lobby_id: int, change_id: int, _making_change_id: int, chat_state: int):
-	# chat_state 1 = Entró, 2 = Salió, 8 = Desconectado
-	if chat_state == Steam.CHAT_MEMBER_STATE_CHANGE_ENTERED:
-		print("Usuario " + str(change_id) + " ha entrado.")
-	elif chat_state == Steam.CHAT_MEMBER_STATE_CHANGE_LEFT or chat_state == Steam.CHAT_MEMBER_STATE_CHANGE_DISCONNECTED:
-		print("Usuario " + str(change_id) + " ha salido.")
-	
-	# Emitimos señal para que la UI (lobby.gd) se actualice
-	emit_signal("lobby_player_update", chat_state, change_id)
 
 func create_lobby():
 	if lobby_id == 0:
@@ -54,28 +47,29 @@ func open_invite_menu():
 	Steam.activateGameOverlay("LobbyInvite")
 
 
-func _on_lobby_create(connectd: int, this_lobby_id:int):
-	print("CREATING LOBBY...")
+func _on_lobby_create(connectd: int, this_lobby_id: int):
 	if connectd == 1:
 		lobby_id = this_lobby_id
-		print(lobby_id)
-		await get_tree().process_frame
-
-		peer = SteamMultiplayerPeer.new()
-		Steam.setLobbyJoinable(lobby_id,true)
+		print("Lobby creado ID: ", lobby_id)
 		
-		Steam.setLobbyData(lobby_id,"name",Global.steam_username +"lobby")
+		# Configurar Host
+		peer = SteamMultiplayerPeer.new()
 		var error = peer.create_host(0)
 		
 		if error == OK:
-			multiplayer.multiplayer_peer = peer # Le decimos a Godot que use Steam
-			print("Host iniciado correctamente")
+			multiplayer.multiplayer_peer = peer
+			
+			# Configurar datos de Steam
+			Steam.setLobbyJoinable(lobby_id, true)
+			Steam.setLobbyData(lobby_id, "name", Global.steam_username + "'s lobby")
+			
+			# El host entra directo al lobby
+			Global.change_scene("res://Scenes/lobby.tscn")
+			# Pequeña espera para asegurar que la escena cargó antes de emitir
+			await get_tree().process_frame 
+			emit_signal("player_joined", Global.steam_id)
 		else:
-			print("Error al iniciar host",error)
-		emit_signal("player_joined",Global.steam_id)
-		
-		Global.change_scene("res://Scenes/lobby.tscn")
-		emit_signal("player_joined",Global.steam_id)
+			print("Error al iniciar host: ", error)
 
 
 
@@ -88,55 +82,30 @@ func join_lobby(this_lobby_id :int):
 	Steam.joinLobby(this_lobby_id)
 
 
-func _on_lobby_joined(this_lobby_id:int, _permissions:int, _locked:bool, response:int):
+func _on_lobby_joined(this_lobby_id: int, _permissions: int, _locked: bool, response: int):
 	if response == Steam.CHAT_ROOM_ENTER_RESPONSE_SUCCESS:
 		lobby_id = this_lobby_id
 		var host_id = Steam.getLobbyOwner(lobby_id)
 		
+		# Si soy el dueño, no hago nada (ya lo manejó create_lobby)
 		if host_id == Steam.getSteamID():
-			return  # Ya es host
+			return 
 		
-		print("Conectando al host: ", host_id)
+		print("Lobby Steam unido. Conectando a Host Godot: ", host_id)
+		
+		# Pantalla de carga mientras conectamos
 		Global.change_scene("res://Scenes/LoadingScene.tscn")
-		await get_tree().process_frame
-		# Esperar un momento para que Steam esté listo
-		await get_tree().create_timer(0.5).timeout
 		
-		# Crear y configurar el cliente
-		var client_peer = SteamMultiplayerPeer.new()
-		var error = client_peer.create_client(host_id, 0)
+		# Crear Cliente
+		peer = SteamMultiplayerPeer.new() # Usamos la variable global 'peer'
+		var error = peer.create_client(host_id, 0)
 		
 		if error == OK:
-			print("Cliente Steam creado, asignando a Godot...")
-			multiplayer.multiplayer_peer = client_peer
-			
-			# Esperar explícitamente a la conexión
-			await get_tree().create_timer(2.0).timeout
-			
-			# Verificar estado
-			var status = multiplayer.multiplayer_peer.get_connection_status()
-			print("Estado de conexión después de 2s: ", status)
-			
-			if status == MultiplayerPeer.CONNECTION_CONNECTED:
-				print("¡Conectado! Cambiando escena...")
-				Global.change_scene("res://Scenes/lobby.tscn")
-			elif status == MultiplayerPeer.CONNECTION_CONNECTING:
-				print("Todavía conectando... esperando más")
-				await get_tree().create_timer(3.0).timeout
-				status = multiplayer.multiplayer_peer.get_connection_status()
-				print("Estado después de 5s total: ", status)
-				
-				if status == MultiplayerPeer.CONNECTION_CONNECTED:
-					Global.change_scene("res://Scenes/lobby.tscn")
-				else:
-					print("Fallo de conexión. Estado: ", status)
-					Global.change_scene("res://Scenes/main.tscn")
-					multiplayer.multiplayer_peer = null
-			else:
-				print("Estado inesperado: ", status)
-				multiplayer.multiplayer_peer = null
+			multiplayer.multiplayer_peer = peer
+			print("Esperando señal 'connected_to_server'...")
+
 		else:
-			print("Error FATAL al crear cliente Steam: ", error)
+			print("Error al crear cliente: ", error)
 
 
 func get_lobby_members():
@@ -163,11 +132,17 @@ func check_command_line():
 	
 
 func leave_lobby():
-	if lobby_id == 0:
+	if lobby_id != 0:
 		Steam.leaveLobby(lobby_id)
 		lobby_id = 0
-	multiplayer.multiplayer_peer = null
 	
+	# Cerrar peer de Godot
+	if multiplayer.multiplayer_peer:
+		multiplayer.multiplayer_peer.close()
+		multiplayer.multiplayer_peer = null
+	
+	peer = null
+	is_host = false
 	Global.change_scene("res://Scenes/main.tscn")
 
 func _on_server_disconnected():
@@ -203,7 +178,7 @@ func get_lobbies_with_friends() -> Dictionary:
 
 @rpc("call_local", "reliable")
 func start_game(game_scene_path:String):
-	
+	print("Iniciando juego, cargando mapa...")
 	Global.change_scene(game_scene_path)
 	
 	
