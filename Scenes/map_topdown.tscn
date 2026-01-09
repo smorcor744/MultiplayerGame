@@ -23,8 +23,17 @@ texture = ExtResource("1_wjr4l")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Sprite2D2/Area2D"]
 shape = SubResource("CircleShape2D_qlfii")
 
-[node name="Players" type="Node2D" parent="."]
-position = Vector2(613, 123)
+[node name="Players" type="Node2D" parent="." groups=["PuntosSpawn"]]
+position = Vector2(768, 192)
+
+[node name="Players2" type="Node2D" parent="." groups=["PuntosSpawn"]]
+position = Vector2(384, 192)
+
+[node name="Players3" type="Node2D" parent="." groups=["PuntosSpawn"]]
+position = Vector2(384, 448)
+
+[node name="Players4" type="Node2D" parent="." groups=["PuntosSpawn"]]
+position = Vector2(768, 448)
 
 [node name="Spawners" type="Node" parent="."]
 
