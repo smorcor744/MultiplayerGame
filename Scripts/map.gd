@@ -2,24 +2,48 @@ extends Node2D
 
 @export var player_scene: PackedScene
 
-@onready var multiplayer_spawner: MultiplayerSpawner = $Spawners/MultiplayerSpawner
-@onready var players_container: Node2D = $Players
+@onready var multiplayer_spawner: MultiplayerSpawner = $MultiplayerSpawner
+
+
+@onready var players_container = self 
 
 func _ready():
 	multiplayer_spawner.spawn_function = _spawn_player_function
 	
 	if multiplayer.is_server():
-		print("Soy el Host, iniciando spawns...")
-		
-		multiplayer.peer_connected.connect(_on_peer_connected)
+		print("Soy el Host, esperando clientes...")
 		multiplayer.peer_disconnected.connect(_on_peer_disconnected)
 		
-		var all_peers = multiplayer.get_peers()
-		all_peers.append(1)
+		_spawnear_jugador(1)
 		
-		for peer_id in all_peers:
-			_on_peer_connected(peer_id)
+	else:
+		rpc_id(1, "cliente_listo_para_jugar")
 
+@rpc("any_peer", "call_local", "reliable")
+func cliente_listo_para_jugar():
+	if multiplayer.is_server():
+		var id_jugador = multiplayer.get_remote_sender_id()
+		_spawnear_jugador(id_jugador)
+
+func _spawnear_jugador(id: int):
+	if players_container.has_node(str(id)):
+		return
+
+	var puntos = get_tree().get_nodes_in_group("PuntosSpawn")
+	
+	if puntos.size() == 0:
+		print("ERROR: No quedan puntos de spawn")
+		return
+
+	var punto_elegido = puntos.pick_random()
+	punto_elegido.remove_from_group("PuntosSpawn")
+	
+	var datos_spawn = {
+		"id": id,
+		"pos": punto_elegido.global_position
+	}
+	
+	multiplayer_spawner.spawn(datos_spawn)
 
 func _spawn_player_function(data) -> Node:
 	var peer_id = data.id   
@@ -31,22 +55,7 @@ func _spawn_player_function(data) -> Node:
 	player.position = spawn_pos  
 	player.set_multiplayer_authority(peer_id)
 	
-	print("Spawn ejecutado para ID: ", peer_id, " en pos: ", spawn_pos)
 	return player
-
-func _on_peer_connected(id: int):
-	# Obtenemos todos los puntos de spawn
-	var puntos = get_tree().get_nodes_in_group("PuntosSpawn")
-	print(puntos)
-	# Elegimos uno al azar (o podrías usar un contador para ir en orden)
-	var punto_elegido = puntos.pick_random()
-	punto_elegido.remove_from_group("PuntosSpawn")
-	var datos_spawn = {
-		"id": id,
-		"pos": punto_elegido.global_position
-	}
-	
-	multiplayer_spawner.spawn(datos_spawn)
 
 func _on_peer_disconnected(id: int):
 	print("Jugador desconectado: ", id)

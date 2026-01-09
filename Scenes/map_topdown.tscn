@@ -35,10 +35,8 @@ position = Vector2(384, 448)
 [node name="Players4" type="Marker2D" parent="." groups=["PuntosSpawn"]]
 position = Vector2(768, 448)
 
-[node name="Spawners" type="Node" parent="."]
-
-[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="Spawners"]
-spawn_path = NodePath("../..")
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
+spawn_path = NodePath("..")
 script = ExtResource("4_33p0n")
 network_player = ExtResource("2_371a0")
 
