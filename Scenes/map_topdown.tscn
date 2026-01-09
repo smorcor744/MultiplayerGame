@@ -38,7 +38,7 @@ position = Vector2(768, 448)
 [node name="Spawners" type="Node" parent="."]
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="Spawners"]
-spawn_path = NodePath("../../Players")
+spawn_path = NodePath("../..")
 script = ExtResource("4_33p0n")
 network_player = ExtResource("2_371a0")
 

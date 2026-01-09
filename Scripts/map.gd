@@ -37,7 +37,7 @@ func _spawn_player_function(data) -> Node:
 func _on_peer_connected(id: int):
 	# Obtenemos todos los puntos de spawn
 	var puntos = get_tree().get_nodes_in_group("PuntosSpawn")
-	
+	print(puntos)
 	# Elegimos uno al azar (o podrías usar un contador para ir en orden)
 	var punto_elegido = puntos.pick_random()
 	punto_elegido.remove_from_group("PuntosSpawn")
