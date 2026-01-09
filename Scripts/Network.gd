@@ -11,14 +11,12 @@ var peer : SteamMultiplayerPeer
 
 
 signal player_joined(user)
-signal lobby_player_update(type, user_id)
 
 
 func _ready() -> void:
 	Steam.lobby_created.connect(_on_lobby_create)
 	Steam.lobby_joined.connect(_on_lobby_joined)
 	Steam.join_requested.connect(_on_lobby_joined_requested)
-	Steam.lobby_chat_update.connect(_on_lobby_chat_update)
 	multiplayer.connected_to_server.connect(_on_connected_to_server)
 	multiplayer.connection_failed.connect(_on_connection_failed)
 
