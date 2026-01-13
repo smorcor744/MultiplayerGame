@@ -13,86 +13,80 @@
 script = ExtResource("1_myvm1")
 player_scene = ExtResource("2_26yhd")
 
-[node name="TileMapLayer" type="TileMapLayer" parent="."]
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
+spawn_path = NodePath("../Players2")
+script = ExtResource("3_p3ir5")
+network_player = ExtResource("2_26yhd")
+
+[node name="Players2" type="Marker2D" parent="." groups=["PuntosSpawn"]]
+position = Vector2(937, 226)
+
+[node name="Players3" type="Marker2D" parent="." groups=["PuntosSpawn"]]
+position = Vector2(618, 119)
+
+[node name="Players4" type="Marker2D" parent="." groups=["PuntosSpawn"]]
+position = Vector2(213, 257)
+
+[node name="Players5" type="Marker2D" parent="." groups=["PuntosSpawn"]]
+position = Vector2(614, 499)
+
+[node name="Node" type="Node" parent="."]
+
+[node name="TileMapLayer" type="TileMapLayer" parent="Node"]
 tile_set = SubResource("TileSet_26yhd")
 
-[node name="Icon" type="Sprite2D" parent="."]
+[node name="Icon" type="Sprite2D" parent="Node"]
 position = Vector2(574, 662)
 scale = Vector2(9, 1)
 texture = ExtResource("1_ci6au")
 
-[node name="Icon2" type="Sprite2D" parent="."]
+[node name="Icon2" type="Sprite2D" parent="Node"]
 position = Vector2(238, 411)
 scale = Vector2(1.984375, 0.75)
 texture = ExtResource("1_ci6au")
 
-[node name="Icon3" type="Sprite2D" parent="."]
+[node name="Icon3" type="Sprite2D" parent="Node"]
 position = Vector2(954, 401)
 scale = Vector2(2.171875, 0.6640625)
 texture = ExtResource("1_ci6au")
 
-[node name="Icon4" type="Sprite2D" parent="."]
+[node name="Icon4" type="Sprite2D" parent="Node"]
 position = Vector2(609, 269)
 scale = Vector2(1.4375, 1)
 texture = ExtResource("1_ci6au")
 
-[node name="suelo" type="StaticBody2D" parent="."]
+[node name="suelo" type="StaticBody2D" parent="Node"]
 position = Vector2(609, 269)
 scale = Vector2(1.4375, 1)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="suelo"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Node/suelo"]
 position = Vector2(0.6956522, 331)
 scale = Vector2(0.6956522, 1)
 shape = SubResource("WorldBoundaryShape2D_p3ir5")
 
-[node name="pared_l" type="StaticBody2D" parent="."]
+[node name="pared_l" type="StaticBody2D" parent="Node"]
 position = Vector2(0, 269)
 rotation = 1.5707964
 scale = Vector2(1.4375, 1)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="pared_l"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Node/pared_l"]
 scale = Vector2(0.6956522, 1)
 shape = SubResource("WorldBoundaryShape2D_p3ir5")
 
-[node name="pared_r" type="StaticBody2D" parent="."]
+[node name="pared_r" type="StaticBody2D" parent="Node"]
 position = Vector2(1150, 234.99997)
 rotation = -1.5707964
 scale = Vector2(1.4375, 1)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="pared_r"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Node/pared_r"]
 scale = Vector2(0.6956522, 1)
 shape = SubResource("WorldBoundaryShape2D_p3ir5")
 
-[node name="techo" type="StaticBody2D" parent="."]
+[node name="techo" type="StaticBody2D" parent="Node"]
 position = Vector2(895, 0)
-rotation = 3.1415927
+rotation = -3.1415925
 scale = Vector2(1.4375, 1)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="techo"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Node/techo"]
 scale = Vector2(0.6956522, 1)
 shape = SubResource("WorldBoundaryShape2D_p3ir5")
-
-[node name="Players" type="Node2D" parent="."]
-position = Vector2(613, 123)
-
-[node name="Spawners" type="Node" parent="."]
-
-[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="Spawners"]
-spawn_path = NodePath("../../Players")
-script = ExtResource("3_p3ir5")
-network_player = ExtResource("2_26yhd")
-
-[node name="MultiplayerSpawner2" type="MultiplayerSpawner" parent="Spawners"]
-spawn_path = NodePath("../../Players")
-script = ExtResource("3_p3ir5")
-network_player = ExtResource("2_26yhd")
-
-[node name="MultiplayerSpawner3" type="MultiplayerSpawner" parent="Spawners"]
-spawn_path = NodePath("../../Players")
-script = ExtResource("3_p3ir5")
-network_player = ExtResource("2_26yhd")
-
-[node name="MultiplayerSpawner4" type="MultiplayerSpawner" parent="Spawners"]
-spawn_path = NodePath("../../Players")
-script = ExtResource("3_p3ir5")
-network_player = ExtResource("2_26yhd")

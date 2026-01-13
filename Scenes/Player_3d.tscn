@@ -1,0 +1,54 @@
+[gd_scene load_steps=9 format=3 uid="uid://dfsvkg0dr2dv2"]
+
+[ext_resource type="Script" uid="uid://2v7mlurqftic" path="res://Scripts/3D_Player.gd" id="1_3sbpi"]
+[ext_resource type="PackedScene" uid="uid://cxcrxm8x8terr" path="res://addons/rope3d/Rope3D.tscn" id="2_0h1o2"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2ujs0"]
+albedo_color = Color(0, 0, 0, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_v4df4"]
+material = SubResource("StandardMaterial3D_2ujs0")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_uyyv4"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0h1o2"]
+albedo_color = Color(1, 1, 0, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_0h1o2"]
+material = SubResource("StandardMaterial3D_0h1o2")
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_0h1o2"]
+
+[node name="Player" type="Node3D"]
+
+[node name="Node3D" type="CharacterBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.8197452)
+script = ExtResource("1_3sbpi")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.8197452)
+mesh = SubResource("BoxMesh_v4df4")
+skeleton = NodePath("../../..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.8197452)
+shape = SubResource("BoxShape3D_uyyv4")
+
+[node name="Rope3D" parent="." node_paths=PackedStringArray("start_point", "end_point") instance=ExtResource("2_0h1o2")]
+start_point = NodePath("../Node3D")
+end_point = NodePath("../bola/MeshInstance3D")
+
+[node name="bola" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.7810556)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="bola"]
+mesh = SubResource("SphereMesh_0h1o2")
+skeleton = NodePath("../..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="bola"]
+shape = SubResource("SphereShape3D_0h1o2")
+
+[node name="PinJoint3D" type="PinJoint3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.49864036)
+node_a = NodePath("../bola")
+node_b = NodePath("../Node3D")
