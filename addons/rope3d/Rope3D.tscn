@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://cxcrxm8x8terr"]
 
-[ext_resource type="Script" path="res://addons/rope3d/rope3d.gd" id="1_65maw"]
-[ext_resource type="Script" path="res://addons/rope3d/rope_mesh.gd" id="2_fse5m"]
+[ext_resource type="Script" uid="uid://cqiu3ewmexcd0" path="res://addons/rope3d/rope3d.gd" id="1_65maw"]
+[ext_resource type="Script" uid="uid://chuqab5fbgwm" path="res://addons/rope3d/rope_mesh.gd" id="2_fse5m"]
 
 [sub_resource type="ImmediateMesh" id="ImmediateMesh_f4lff"]
 
@@ -9,6 +9,7 @@
 
 [node name="Rope3D" type="Node3D"]
 script = ExtResource("1_65maw")
+radius = 1.465
 
 [node name="RopeMesh" type="MeshInstance3D" parent="." node_paths=PackedStringArray("path")]
 mesh = SubResource("ImmediateMesh_f4lff")

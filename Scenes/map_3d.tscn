@@ -19,7 +19,13 @@ mesh = SubResource("SphereMesh_qw12a")
 shape = SubResource("ConcavePolygonShape3D_iibpu")
 
 [node name="CharacterBody3D" parent="." instance=ExtResource("1_2ujs0")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6763922, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7869817, 0)
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.70110846, 0.71305466, 0, -0.71305466, 0.70110846, 0, 10.420401, 11.798727)
+
+[node name="SpotLight3D" type="SpotLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 23.11141, 0)
+light_color = Color(1, 1, 0.60784316, 1)
+light_energy = 16.0
+spot_range = 37.640686
