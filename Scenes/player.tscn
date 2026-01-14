@@ -1,4 +1,4 @@
-[gd_scene load_steps=59 format=3 uid="uid://dh8pwqukj5i7o"]
+[gd_scene load_steps=64 format=3 uid="uid://dh8pwqukj5i7o"]
 
 [ext_resource type="Script" uid="uid://2qhwtjb0a24e" path="res://Scripts/player.gd" id="1_cvnsp"]
 [ext_resource type="Texture2D" uid="uid://d2nr80fws4qi8" path="res://Assets/male_hero_template.png" id="2_6t5aa"]
@@ -14,6 +14,22 @@ region = Rect2(128, 896, 128, 128)
 [sub_resource type="AtlasTexture" id="AtlasTexture_vq3lt"]
 atlas = ExtResource("2_6t5aa")
 region = Rect2(256, 896, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pukcj"]
+atlas = ExtResource("2_6t5aa")
+region = Rect2(0, 1024, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1htnp"]
+atlas = ExtResource("2_6t5aa")
+region = Rect2(128, 1024, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_m376e"]
+atlas = ExtResource("2_6t5aa")
+region = Rect2(256, 1024, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6b312"]
+atlas = ExtResource("2_6t5aa")
+region = Rect2(384, 1024, 128, 128)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ph33w"]
 atlas = ExtResource("2_6t5aa")
@@ -226,6 +242,18 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_vq3lt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_pukcj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1htnp")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_m376e")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6b312")
 }],
 "loop": false,
 "name": &"attack",
@@ -446,6 +474,8 @@ properties/5/path = NodePath("AnimatedSprite2D:frame")
 properties/5/spawn = true
 properties/5/replication_mode = 1
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_cvnsp"]
+
 [node name="Player" type="CharacterBody2D"]
 texture_filter = 1
 scale = Vector2(1.8553219, 1.8553219)
@@ -455,6 +485,8 @@ script = ExtResource("1_cvnsp")
 sprite_frames = SubResource("SpriteFrames_yh6i2")
 animation = &"attack"
 autoplay = "idle"
+frame = 6
+frame_progress = 1.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CapsuleShape2D_nv4vc")
@@ -479,5 +511,13 @@ vertical_alignment = 1
 autowrap_mode = 2
 metadata/_edit_use_anchors_ = true
 
+[node name="Area2D" type="Area2D" parent="."]
+position = Vector2(30.18344, -3.7729301)
+scale = Vector2(2.037495, -2.1292403)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("CircleShape2D_cvnsp")
+
 [connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animation_finished"]
 [connection signal="timeout" from="DamageTimer" to="." method="_on_damage_timer_timeout"]
+[connection signal="body_entered" from="Area2D" to="." method="_on_attack_area"]

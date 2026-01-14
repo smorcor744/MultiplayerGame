@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://bqhhac3m1qesm"]
+[gd_scene load_steps=7 format=3 uid="uid://bqhhac3m1qesm"]
 
 [ext_resource type="Script" uid="uid://dihbl8wgtqujg" path="res://Scripts/player_topdown.gd" id="1_h58y6"]
 [ext_resource type="PackedScene" uid="uid://d2dfdt3bmklq" path="res://Scenes/bola.tscn" id="2_7mcy5"]
@@ -6,6 +6,9 @@
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_7mcy5"]
 size = Vector2(15.959263, 15.959264)
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_7mcy5"]
+rough = true
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_7mcy5"]
 properties/0/path = NodePath(".:position")
@@ -32,7 +35,7 @@ shape = SubResource("RectangleShape2D_7mcy5")
 
 [node name="RigidBody2D" parent="." instance=ExtResource("2_7mcy5")]
 position = Vector2(0, 26.115156)
-fuerza_empuje = 500.0
+physics_material_override = SubResource("PhysicsMaterial_7mcy5")
 
 [node name="DampedSpringJoint2D" type="DampedSpringJoint2D" parent="."]
 node_a = NodePath("..")

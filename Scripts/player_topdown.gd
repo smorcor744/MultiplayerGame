@@ -17,6 +17,14 @@ func _process(_delta: float) -> void:
 
 	cuerda.add_point(player_join.position)
 	cuerda.add_point(ball_join.position)
+	for i in range(get_slide_collision_count()):
+		var collision = get_slide_collision(i)
+		var body = collision.get_collider()
+
+		if body is RigidBody2D:
+			var push_dir = -collision.get_normal()
+			var push_force = velocity.length() * 0.8
+			body.apply_central_impulse(push_dir * push_force)
 
 func _physics_process(delta: float) -> void:
 	if not is_multiplayer_authority(): return 
@@ -34,6 +42,9 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 
 
+
+
 func recibir_knockback(direccion: Vector2, fuerza: float):
 	# Asignamos el vector de empuje
 	knockback_actual = direccion * fuerza
+	

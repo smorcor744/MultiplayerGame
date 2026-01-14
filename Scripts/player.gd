@@ -50,11 +50,8 @@ func _physics_process(delta):
 		knockback_timer -= delta
 		move_and_slide()
 		return
-	
-	if attacking:
-		return
 
-	
+
 	if dodging:
 		# Mantenemos la velocidad constante en la dirección que miramos
 		velocity.x = facing_direction * DODGE_SPEED
@@ -91,29 +88,30 @@ func _physics_process(delta):
 	if Input.is_action_just_pressed("dodge") and (on_floor_now or coyote) and not dodging and !attacking:
 		dodging = true
 		invulnerable = true
+		#self.collision_layer = 0
 		$DamageTimer.start()
 		animations_player.play("dodge2")
 		velocity.x = JUMP_VELOCITY
 	
 	# Manejo de attack
-	if Input.is_action_just_pressed("attack") and (on_floor_now or coyote) and not dodging and !attacking:
-		animations_player.play("attack")
+	if Input.is_action_just_pressed("attack")  and !attacking:
 		attacking = true
-		
+		animations_player.play("attack")
 
 
 	# Animaciones de movimiento vertical
 	var direction = Input.get_axis("left", "right")
-	if !on_floor_now and velocity.y < 0:
-		animations_player.play("jump")
-	elif !on_floor_now and velocity.y > 0:
-		animations_player.play("falling")
-	elif velocity.x == 0 and velocity.y == 0:
-		animations_player.play("idle")
+	if !attacking:
+		if !on_floor_now and velocity.y < 0 :
+			animations_player.play("jump")
+		elif !on_floor_now and velocity.y > 0:
+			animations_player.play("falling")
+		elif velocity.x == 0 and velocity.y == 0:
+			animations_player.play("idle")
 
 	# Movimiento horizontal
 	
-	if direction:
+	if direction and !attacking:
 		facing_direction = direction
 		if !jumping and !dodging and !attacking:
 			animations_player.play("run")
@@ -219,3 +217,8 @@ func show_attack_flash():
 	$AnimatedSprite2D.modulate = Color(0.092, 0.092, 0.092, 1.0)  
 	await get_tree().create_timer(0.2).timeout
 	$AnimatedSprite2D.modulate = Color(1, 1, 1)  
+
+
+func _on_attack_area(body: Node2D) -> void:
+	if body.has_method("take_damage"):
+		body.take_damage(damage)

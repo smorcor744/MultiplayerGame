@@ -4,10 +4,9 @@ extends RigidBody2D # O RigidBody3D
 
 func _on_body_entered(body: Node):
 	# Verificamos si el cuerpo con el que chocamos tiene la función para recibir daño/empuje
-	if body.has_method("recibir_knockback"):
+	if body.has_method("recibir_knockback") and body != self:
 		print("2")
-		# PASO CRUCIAL: Calcular la dirección del empuje.
-		# Restamos: (Posición de la Víctima) - (Mi Posición)
+		
 		var direccion = (body.global_position - global_position).normalized()
 		
 		# Llamamos a la función en la víctima

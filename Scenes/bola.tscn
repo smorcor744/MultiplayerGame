@@ -10,7 +10,6 @@ radius = 8.0
 gravity_scale = 0.0
 linear_damp = 2.11
 script = ExtResource("1_5mbwn")
-fuerza_empuje = null
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("1_17s4t")
