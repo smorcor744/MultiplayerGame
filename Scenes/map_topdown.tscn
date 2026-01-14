@@ -42,7 +42,7 @@ script = ExtResource("4_33p0n")
 network_player = ExtResource("2_371a0")
 
 [node name="RigidBody2D" parent="." instance=ExtResource("5_33p0n")]
-position = Vector2(488, 288)
+position = Vector2(576, 320)
 
 [connection signal="area_exited" from="Sprite2D2/Area2D" to="." method="_on_area_exited"]
 [connection signal="body_exited" from="Sprite2D2/Area2D" to="." method="_on_body_exited"]
