@@ -11,9 +11,16 @@ extends Node2D
 @onready var spawner_3: Marker2D = $Players3
 @onready var spawner_4: Marker2D = $Players4
 
-var red_team = []
-var blue_team = []
+@onready var red_spawners = [$Players3,$Players2] 
+@onready var blue_spawners = [$Players,$Players4]
+var red_team = {}
+var blue_team = {}
 @onready var players_container = self 
+@onready var pelota_actual = $Pelota
+var gol = false
+var red_gols = 0
+var blue_gols = 0
+
 
 func _ready():
 	multiplayer_spawner.spawn_function = _spawn_player_function
@@ -73,10 +80,10 @@ func _spawn_player_function(data) -> Node:
 	player.modulate = color  
 	if color == Color.BLUE:
 		player.add_to_group("Blue")
-		blue_team.append(player)
+		blue_team[peer_id] = spawn_pos
 	else:
 		player.add_to_group("Red")
-		red_team.append(player)
+		red_team[peer_id] = spawn_pos
 		
 	player.set_multiplayer_authority(peer_id)
 	
@@ -101,32 +108,52 @@ func respawn_players():
 	#Blue
 	spawner_4.add_to_group("PuntosSpawn")
 	spawner_1.add_to_group("PuntosSpawn")
-
-	var player1 = red_team.pick_random()
-	var datos_spawn = {
-		"id": player1.name.to_int(),
-		"pos": spawner_2.global_position,
-		"color":color,
-	}
 	var players = get_tree().get_nodes_in_group("Player")
+
 	for player in players:
-		
-		var puntos = get_tree().get_nodes_in_group("PuntosSpawn")
-		
-		if puntos.size() == 0:
-			print("ERROR: No quedan puntos de spawn")
-			return
-		var punto_elegido = puntos.pick_random()
-		
-		if punto_elegido.is_in_group("Blue"):
-			
-			pass
+		var id = int(player.name)
+		if red_team.has(id):
+			player.position = red_team[id]
+		if blue_team.has(id):
+			player.position = blue_team[id]
 	
-	
+	#if red_team.size() >1:
+		#var player1 = _get_data_player("Red")
+		#multiplayer_spawner.spawn(player1)
+		#
+		#var player2 = _get_data_player("Red")
+		#multiplayer_spawner.spawn(player2)
+	#elif red_team.size() >=1:
+		#var player1 = _get_data_player("Red")
+		#multiplayer_spawner.spawn(player1)
+	#
+	#if blue_team.size() >1:
+		#var player1 = _get_data_player("Blue")
+		#multiplayer_spawner.spawn(player1)
+		#
+		#var player2 = _get_data_player("Blue")
+		#multiplayer_spawner.spawn(player2)
+	#elif red_team.size() >=1:
+		#var player1 = _get_data_player("Red")
+		#multiplayer_spawner.spawn(player1)
 
-	multiplayer_spawner.spawn(datos_spawn)
-
-
+func _get_data_player(team:String):
+	var datos = {}
+	if team == "Red":
+		var player = red_team.pick_random()
+		datos = {
+			"id": player.name.to_int(),
+			"pos": red_spawners.pick_random().global_position,
+			"color":Color.RED,
+		}
+	else:
+		var player = red_team.pick_random()
+		datos = {
+			"id": player.name.to_int(),
+			"pos": blue_spawners.pick_random().global_position,
+			"color":Color.BLUE,
+		}
+	return datos
 
 
 func timer_between():
@@ -135,33 +162,59 @@ func timer_between():
 	var segundos = 3
 	$Panel.visible = true
 	for i in range(segundos):
-		$Panel/Label.text = str(i)
-		print("Quedan: ", segundos - i) 
+		$Panel/Label.text = str(segundos - i)
 		await get_tree().create_timer(1.0).timeout
 		
-	print("¡Tiempo terminado!")
 	$Panel/Label.text = "Jugar!!"
 	
 	await get_tree().create_timer(0.5).timeout
 	$Panel.visible = false
 	get_tree().paused = false
+	gol = false
 
 func _on_fuera_body_exited(body: Node2D) -> void:
 
-	if body.is_in_group("Pelota"):
+	if body.is_in_group("Pelota") and gol == false:
+		print("fuera")
 		$Panel/Label.text = "Fuera!!"
 		$Panel.visible = true
+		await get_tree().create_timer(1.0).timeout
 		timer_between()
-		await get_tree().create_timer(3).timeout
+		pelota_actual.queue_free()
+		pelota_actual = pelota.instantiate() 
+		$ball.call_deferred("add_child", pelota_actual)
+		respawn_players()
+		
 
 
 func _on_left_body_entered(body: Node2D) -> void:
-	if body.is_in_group("Pelota"):
+	if body.is_in_group("Pelota") and gol == false:
+		print("gool")
+		blue_gols += 1
+		$Marcador.text = "%d : %d" % [red_gols, blue_gols]
+		gol = true
 		$Panel/Label.text = "Goool!!"
 		$Panel.visible = true
-
+		await get_tree().create_timer(1.0).timeout
+		timer_between()
+		pelota_actual.queue_free()
+		pelota_actual = pelota.instantiate() 
+		$ball.call_deferred("add_child", pelota_actual)
+		respawn_players()
+		
 
 func _on_right_body_entered(body: Node2D) -> void:
-	if body.is_in_group("Pelota"):
+	if body.is_in_group("Pelota") and gol == false:
+		print("gool")
+		red_gols += 1
+		$Marcador.text = "%d : %d" % [red_gols, blue_gols]
+		gol = true
 		$Panel/Label.text = "Goool!!"
 		$Panel.visible = true
+		await get_tree().create_timer(1.0).timeout
+		timer_between()
+		pelota_actual.queue_free()
+		pelota_actual = pelota.instantiate() 
+		$ball.call_deferred("add_child", pelota_actual)
+		respawn_players()
+		
