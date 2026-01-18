@@ -20,7 +20,7 @@ var blue_team = {}
 var gol = false
 var red_gols = 0
 var blue_gols = 0
-
+var winner = false
 
 func _ready():
 	multiplayer_spawner.spawn_function = _spawn_player_function
@@ -33,6 +33,7 @@ func _ready():
 		
 	else:
 		rpc_id(1, "cliente_listo_para_jugar")
+
 
 @rpc("any_peer", "call_local", "reliable")
 func cliente_listo_para_jugar():
@@ -191,8 +192,11 @@ func _on_left_body_entered(body: Node2D) -> void:
 	if body.is_in_group("Pelota") and gol == false:
 		print("gool")
 		blue_gols += 1
-		$Marcador.text = "%d : %d" % [red_gols, blue_gols]
+		$Panel2/Marcador.text = "%d:%d" % [red_gols, blue_gols]
 		gol = true
+		ganador()
+		if winner:
+			return
 		$Panel/Label.text = "Goool!!"
 		$Panel.visible = true
 		await get_tree().create_timer(1.0).timeout
@@ -207,8 +211,11 @@ func _on_right_body_entered(body: Node2D) -> void:
 	if body.is_in_group("Pelota") and gol == false:
 		print("gool")
 		red_gols += 1
-		$Marcador.text = "%d : %d" % [red_gols, blue_gols]
+		$Panel2/Marcador.text = "%d:%d" % [red_gols, blue_gols]
 		gol = true
+		ganador()
+		if winner:
+			return
 		$Panel/Label.text = "Goool!!"
 		$Panel.visible = true
 		await get_tree().create_timer(1.0).timeout
@@ -218,3 +225,17 @@ func _on_right_body_entered(body: Node2D) -> void:
 		$ball.call_deferred("add_child", pelota_actual)
 		respawn_players()
 		
+
+func ganador():
+	if red_gols >= 3 or blue_gols >= 3:
+		winner = true
+		@warning_ignore("shadowed_variable")
+		var ganador : String 
+		if red_gols >= 3:
+			ganador = "Red"
+		else:
+			ganador = "Blue"
+		$Panel/Label.text = "%s Wins" % ganador
+		$Panel.visible = true
+		await get_tree().create_timer(2.0).timeout
+		Global.call_deferred("change_scene", "res://Scenes/lobby.tscn")
