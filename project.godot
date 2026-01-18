@@ -71,6 +71,17 @@ attack={
 
 pointing/emulate_touch_from_mouse=true
 
+[layer_names]
+
+2d_render/layer_1="Mapa"
+2d_render/layer_2="Player"
+2d_render/layer_3="Objetos"
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+
 [steam]
 
 initialization/app_id=0

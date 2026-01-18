@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3 uid="uid://dvysexwxn86k2"]
+
+[ext_resource type="Texture2D" uid="uid://bflct5fovc3b8" path="res://Assets/ball_pl.png" id="1_r0bop"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_lviiq"]
+
+[node name="Pelota" type="RigidBody2D" groups=["Pelota"]]
+collision_layer = 4
+collision_mask = 7
+gravity_scale = 0.0
+linear_damp = 2.0
+angular_damp = 2.0
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+self_modulate = Color(0, 0, 0, 1)
+texture = ExtResource("1_r0bop")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_lviiq")

@@ -1,15 +1,14 @@
-[gd_scene load_steps=7 format=3 uid="uid://bh1faol61akd3"]
+[gd_scene load_steps=6 format=3 uid="uid://bh1faol61akd3"]
 
 [ext_resource type="Script" uid="uid://c7vbh5t2rrniy" path="res://Scripts/map.gd" id="1_ofola"]
 [ext_resource type="Texture2D" uid="uid://b8tg4fcf2k2j2" path="res://Assets/map.png" id="1_wjr4l"]
 [ext_resource type="PackedScene" uid="uid://bqhhac3m1qesm" path="res://Scenes/player_topdown.tscn" id="2_371a0"]
 [ext_resource type="Script" uid="uid://bltbovrtxw216" path="res://Scripts/multiplayer_spawner.gd" id="4_33p0n"]
-[ext_resource type="PackedScene" uid="uid://d2dfdt3bmklq" path="res://Scenes/bola.tscn" id="5_33p0n"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_qlfii"]
 radius = 123.4083
 
-[node name="Node2D" type="Node2D"]
+[node name="Sumo" type="Node2D"]
 texture_filter = 1
 script = ExtResource("1_ofola")
 player_scene = ExtResource("2_371a0")
@@ -40,9 +39,6 @@ position = Vector2(768, 448)
 spawn_path = NodePath("..")
 script = ExtResource("4_33p0n")
 network_player = ExtResource("2_371a0")
-
-[node name="RigidBody2D" parent="." instance=ExtResource("5_33p0n")]
-position = Vector2(576, 320)
 
 [connection signal="area_exited" from="Sprite2D2/Area2D" to="." method="_on_area_exited"]
 [connection signal="body_exited" from="Sprite2D2/Area2D" to="." method="_on_body_exited"]

@@ -1,0 +1,167 @@
+[gd_scene load_steps=12 format=3 uid="uid://i6t4uvfoaqv8"]
+
+[ext_resource type="Script" uid="uid://c7vbh5t2rrniy" path="res://Scripts/map.gd" id="1_g62d6"]
+[ext_resource type="Script" uid="uid://bltbovrtxw216" path="res://Scripts/multiplayer_spawner.gd" id="2_g62d6"]
+[ext_resource type="Texture2D" uid="uid://dmapn2e5sacbd" path="res://Assets/Futbol.png" id="3_g62d6"]
+[ext_resource type="PackedScene" uid="uid://bqhhac3m1qesm" path="res://Scenes/player_topdown.tscn" id="3_xbg6q"]
+[ext_resource type="PackedScene" uid="uid://dvysexwxn86k2" path="res://Scenes/pelota.tscn" id="5_xbg6q"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_xbg6q"]
+size = Vector2(1093, 591)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ce3mb"]
+size = Vector2(36, 220)
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_xbg6q"]
+properties/0/path = NodePath("Pelota:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath("Pelota:rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_g62d6"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_lviiq"]
+size = Vector2(40, 10)
+
+[sub_resource type="LabelSettings" id="LabelSettings_xbg6q"]
+font_size = 126
+
+[node name="Futbol" type="Node2D"]
+script = ExtResource("1_g62d6")
+player_scene = ExtResource("3_xbg6q")
+pelota = ExtResource("5_xbg6q")
+
+[node name="Sprite2D2" type="Sprite2D" parent="."]
+position = Vector2(576, 324)
+texture = ExtResource("3_g62d6")
+
+[node name="Fuera" type="Area2D" parent="."]
+position = Vector2(576, 324)
+collision_mask = 7
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Fuera"]
+position = Vector2(0.49993896, -0.5)
+shape = SubResource("RectangleShape2D_xbg6q")
+
+[node name="left" type="Area2D" parent="."]
+position = Vector2(10, 222)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="left"]
+position = Vector2(8, 100)
+shape = SubResource("RectangleShape2D_ce3mb")
+
+[node name="right" type="Area2D" parent="."]
+position = Vector2(1127, 225)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="right"]
+position = Vector2(8, 100)
+shape = SubResource("RectangleShape2D_ce3mb")
+
+[node name="Players3" type="Marker2D" parent="." groups=["PuntosSpawn", "Red"]]
+position = Vector2(384, 448)
+
+[node name="Players2" type="Marker2D" parent="." groups=["PuntosSpawn", "Red"]]
+position = Vector2(384, 192)
+
+[node name="Players" type="Marker2D" parent="." groups=["Blue", "PuntosSpawn"]]
+position = Vector2(768, 192)
+
+[node name="Players4" type="Marker2D" parent="." groups=["Blue", "PuntosSpawn"]]
+position = Vector2(768, 448)
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
+spawn_path = NodePath("..")
+script = ExtResource("2_g62d6")
+network_player = ExtResource("3_xbg6q")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_xbg6q")
+
+[node name="Colisiones" type="Node" parent="."]
+
+[node name="StaticBody2D" type="StaticBody2D" parent="Colisiones"]
+rotation = -3.1415925
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colisiones/StaticBody2D"]
+shape = SubResource("WorldBoundaryShape2D_g62d6")
+
+[node name="StaticBody2D2" type="StaticBody2D" parent="Colisiones"]
+rotation = 1.5707964
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colisiones/StaticBody2D2"]
+shape = SubResource("WorldBoundaryShape2D_g62d6")
+
+[node name="StaticBody2D3" type="StaticBody2D" parent="Colisiones"]
+position = Vector2(1153, 648)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colisiones/StaticBody2D3"]
+shape = SubResource("WorldBoundaryShape2D_g62d6")
+
+[node name="StaticBody2D4" type="StaticBody2D" parent="Colisiones"]
+position = Vector2(1153, 648)
+rotation = -1.5707964
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colisiones/StaticBody2D4"]
+shape = SubResource("WorldBoundaryShape2D_g62d6")
+
+[node name="Palo" type="StaticBody2D" parent="Colisiones"]
+position = Vector2(30, 203)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colisiones/Palo"]
+position = Vector2(-10, 4)
+shape = SubResource("RectangleShape2D_lviiq")
+
+[node name="Palo2" type="StaticBody2D" parent="Colisiones"]
+position = Vector2(30, 433)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colisiones/Palo2"]
+position = Vector2(-10, 4)
+shape = SubResource("RectangleShape2D_lviiq")
+
+[node name="Palo3" type="StaticBody2D" parent="Colisiones"]
+position = Vector2(1142, 206)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colisiones/Palo3"]
+position = Vector2(-10, 4)
+shape = SubResource("RectangleShape2D_lviiq")
+
+[node name="Palo4" type="StaticBody2D" parent="Colisiones"]
+position = Vector2(1142, 436)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colisiones/Palo4"]
+position = Vector2(-10, 4)
+shape = SubResource("RectangleShape2D_lviiq")
+
+[node name="Pelota" parent="." instance=ExtResource("5_xbg6q")]
+position = Vector2(577, 324)
+
+[node name="Panel" type="Panel" parent="."]
+visible = false
+z_index = 130
+offset_right = 1153.0
+offset_bottom = 648.0
+
+[node name="Label" type="Label" parent="Panel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -192.5
+offset_top = -132.0
+offset_right = 191.5
+offset_bottom = 124.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+text = "Fuera!!"
+label_settings = SubResource("LabelSettings_xbg6q")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[connection signal="body_exited" from="Fuera" to="." method="_on_fuera_body_exited"]
+[connection signal="body_entered" from="left" to="." method="_on_left_body_entered"]
+[connection signal="body_entered" from="right" to="." method="_on_right_body_entered"]
