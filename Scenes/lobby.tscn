@@ -102,6 +102,27 @@ grow_horizontal = 0
 grow_vertical = 0
 text = "Start Game"
 
+[node name="HBoxContainer" type="HBoxContainer" parent="StartGame"]
+visible = false
+layout_mode = 0
+offset_left = -40.0
+offset_top = -48.0
+offset_right = 164.0
+offset_bottom = -8.0
+
+[node name="Sumo" type="Button" parent="StartGame/HBoxContainer"]
+layout_mode = 2
+text = "Sumo
+"
+
+[node name="Futbol" type="Button" parent="StartGame/HBoxContainer"]
+layout_mode = 2
+text = "Futbol"
+
+[node name="Fight" type="Button" parent="StartGame/HBoxContainer"]
+layout_mode = 2
+text = "Fight"
+
 [node name="Invite" type="Label" parent="."]
 layout_mode = 0
 offset_left = 896.0
@@ -158,4 +179,7 @@ replication_config = SubResource("SceneReplicationConfig_nvaej")
 [connection signal="text_submitted" from="Vbox/HBoxContainer/Message" to="." method="_on_message_text_submitted"]
 [connection signal="pressed" from="Vbox/HBoxContainer/Send" to="." method="_on_send_pressed"]
 [connection signal="pressed" from="StartGame" to="." method="_on_start_game_pressed"]
+[connection signal="pressed" from="StartGame/HBoxContainer/Sumo" to="." method="_on_sumo_pressed"]
+[connection signal="pressed" from="StartGame/HBoxContainer/Futbol" to="." method="_on_futbol_pressed"]
+[connection signal="pressed" from="StartGame/HBoxContainer/Fight" to="." method="_on_fight_pressed"]
 [connection signal="pressed" from="Refresh" to="." method="_on_refresh_pressed"]

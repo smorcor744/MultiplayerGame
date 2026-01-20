@@ -2,7 +2,7 @@ extends Control
 @onready var friends_container: VBoxContainer = $ScrollContainer/Friends
 @onready var chat: RichTextLabel = $Vbox/RichTextLabel
 @onready var message: LineEdit = $Vbox/HBoxContainer/Message
-
+var path = null
 
 func _ready() -> void:
 	name = "Lobby" 
@@ -91,8 +91,8 @@ func _on_lobby_item_pressed(friend_steam_id:int) -> void:
 
 func _on_start_game_pressed() -> void:
 	if multiplayer.is_server():
-		Network.rpc("start_game", "res://Scenes/map_topdown.tscn")
-	
+		$StartGame/HBoxContainer.visible = true
+
 
 func _on_exit_lobby_pressed() -> void:
 	Network.leave_lobby()
@@ -130,3 +130,18 @@ func _on_message_text_submitted(_new_text: String) -> void:
 func start_game(game_scene_path:String):
 	
 	Global.change_scene(game_scene_path)
+
+
+func _on_sumo_pressed() -> void:
+	path = "res://Scenes/map_topdown.tscn"
+	Network.rpc("start_game", path)
+
+
+func _on_futbol_pressed() -> void:
+	path = "res://Scenes/futbol.tscn"
+	Network.rpc("start_game", path)
+
+
+func _on_fight_pressed() -> void:
+	path = "res://Scenes/map.tscn"
+	Network.rpc("start_game", path)
