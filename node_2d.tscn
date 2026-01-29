@@ -1,0 +1,42 @@
+[gd_scene format=3 uid="uid://dh74j0sjuc44y"]
+
+[ext_resource type="Script" uid="uid://dt0vs3ka355ni" path="res://patapon.gd" id="1_wtcfe"]
+[ext_resource type="AudioStream" uid="uid://cnswhyfd2h60g" path="res://leonell-cassio-the-paranormal-is-real-ft-carrie-163742.mp3" id="2_0e48y"]
+[ext_resource type="Script" uid="uid://cdx21ctvbgtna" path="res://color_rect.gd" id="2_epypp"]
+
+[node name="Node2D" type="Node2D" unique_id=1457074908]
+script = ExtResource("1_wtcfe")
+bpm = 100
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=2067962686]
+layer = -12
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer" unique_id=1951805767]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.23392546, 0.23392546, 0.23392543, 1)
+script = ExtResource("2_epypp")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=1330990328]
+stream = ExtResource("2_0e48y")
+autoplay = true
+
+[node name="Panel" type="Panel" parent="." unique_id=2068263289]
+modulate = Color(1, 0, 0, 1)
+self_modulate = Color(1, 0, 0, 1)
+z_index = 4096
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 430.0
+offset_top = 290.0
+offset_right = 717.0
+offset_bottom = 491.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_use_anchors_ = true
